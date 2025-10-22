@@ -7,14 +7,14 @@
  *
  * Basic parsing options skeleton exemple c file.
  */
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<errno.h>
-#include<fcntl.h>
-#include<string.h>
-
-#include<getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <getopt.h>
+#include <unistd.h>
 
 
 #define STDOUT 1
@@ -114,14 +114,6 @@ const char* binary_optstr = "hvi:o:";
  */
 int main(int argc, char** argv)
 {
-  /**
-   * Binary variables
-   * (could be defined in a structure)
-   */
-  short int is_verbose_mode = 0;
-  char* bin_input_param = NULL;
-  char* bin_output_param = NULL;
-
   // Parsing options
   int opt = -1;
   int opt_idx = -1;
@@ -130,67 +122,35 @@ int main(int argc, char** argv)
   {
     switch (opt)
     {
-      case 'i':
-        //input param
-        if (optarg)
-        {
-          bin_input_param = dup_optarg_str();         
-        }
-        break;
-      case 'o':
-        //output param
-        if (optarg)
-        {
-          bin_output_param = dup_optarg_str();
-        }
-        break;
-      case 'v':
-        //verbose mode
-        is_verbose_mode = 1;
-        break;
       case 'h':
-        print_usage(argv[0]);
-
-        free_if_needed(bin_input_param);
-        free_if_needed(bin_output_param);
- 
+        print_usage(argv[0]); 
         exit(EXIT_SUCCESS);
       default :
         break;
     }
   } 
 
-  /**
-   * Checking binary requirements
-   * (could defined in a separate function)
-   */
-  if (bin_input_param == NULL || bin_output_param == NULL)
+  if (argv[1] != NULL)
   {
-    dprintf(STDERR, "Bad usage! See HELP [--help|-h]\n");
-
-    // Freeing allocated data
-    free_if_needed(bin_input_param);
-    free_if_needed(bin_output_param);
-    // Exiting with a failure ERROR CODE (== 1)
+    printf("%s\n", argv[1]);
+  } else {
+    printf("No argument\n");
     exit(EXIT_FAILURE);
+  }
+  
+  int p2, file_descriptor;
+
+  if ((p2 = fork()) == 0) {
+    printf("PID : %d\n", getpid());
+    close(1);
+    file_descriptor = mkstemp("./src/exo2_temp.txt");
+    
+    printf("file_descriptor : %d\n", dup2(file_descriptor, 1));
+    
   }
 
 
-  // Printing params
-  dprintf(1, "** PARAMS **\n%-8s: %s\n%-8s: %s\n%-8s: %d\n", 
-          "input",   bin_input_param, 
-          "output",  bin_output_param, 
-          "verbose", is_verbose_mode);
-
-  // Business logic must be implemented at this point
-
-  /* LOREM IPSUM DOT SIR AMET */
-
-
-  // Freeing allocated data
-  free_if_needed(bin_input_param);
-  free_if_needed(bin_output_param);
-
+  close(file_descriptor);
 
   return EXIT_SUCCESS;
 }
