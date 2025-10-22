@@ -1,5 +1,5 @@
 /**
- * \file skeleton.c
+ * \file exo1.c
  * \brief Basic parsing options skeleton.
  * \author Pierre L. <pierre1.leroy@orange.com>
  * \version 0.1
@@ -188,7 +188,7 @@ int main(int argc, char** argv)
   int f1, f2;
 
   f1 = open(bin_input_param, O_RDONLY);
-  f2 = open(bin_output_param, O_WRONLY);
+  f2 = open(bin_output_param, O_WRONLY | O_CREAT);
 
   if (f1 == -1 || f2 == -1) {
     perror("Error");
@@ -216,8 +216,6 @@ int main(int argc, char** argv)
   // Freeing allocated data
   free_if_needed(bin_input_param);
   free_if_needed(bin_output_param);
-  free_if_needed(buf);
-
 
   return EXIT_SUCCESS;
 }
