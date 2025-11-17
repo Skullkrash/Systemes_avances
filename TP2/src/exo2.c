@@ -15,6 +15,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 
 #define STDOUT 1
@@ -140,13 +141,40 @@ int main(int argc, char** argv)
   
   int p2, file_descriptor;
 
-  if ((p2 = fork()) == 0) {
-    printf("PID : %d\n", getpid());
+  if ((p2 = fork()) == 0) { // Child process
+    printf("-----CHILD-----\n");
+    printf("Child PID : %d\n", getpid());
     close(1);
-    file_descriptor = mkstemp("./src/exo2_temp.txt");
+    char* buf = "/tmp/proc-exerciseXXXXXX";
+    file_descriptor = mkstemp(buf);
+    if (file_descriptor == -1)
+    {
+      perror("mkstemp");
+      exit(EXIT_FAILURE);
+    }
     
-    printf("file_descriptor : %d\n", dup2(file_descriptor, 1));
+
+    int ret = dup2(file_descriptor, 1);
+    if (ret == -1)
+    {
+      perror("dup2");
+      exit(EXIT_FAILURE);
+    }
     
+    printf("ret : %d\n", ret);
+
+    // printf("file_descriptor : %d\n", dup2(file_descriptor, 1));
+    printf("Child success !\n");
+    exit(EXIT_SUCCESS);
+  }
+  else { // Parent process
+    printf("-----PARENT-----\n");
+    printf("Parent PID : %d\n", getpid());
+    printf("Waiting for child process to finish...\n");
+    waitpid(p2, NULL, 0); // Wait for child process to finish
+    printf("Parent finished waiting for child !\n");
+    printf("Parent success !\n");
+    exit(EXIT_SUCCESS);
   }
 
 

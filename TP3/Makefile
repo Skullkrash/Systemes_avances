@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -c
-LDFLAGS=-I ./include/
+LDFLAGS=-I ./include/ -lpthread
 
 SRC_DIR=./src
 INC_DIR=./include
@@ -14,7 +14,7 @@ LCOV_REPORT=report.info
 
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
-EXEC=exo2
+EXEC=TP3_exo1
 
 GEXEC=$(EXEC).cov
 
