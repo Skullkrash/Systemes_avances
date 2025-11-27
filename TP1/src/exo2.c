@@ -15,7 +15,6 @@
 #include<string.h>
 // exo2 addition
 #include<unistd.h>
-
 #include<getopt.h>
 
 
@@ -182,10 +181,6 @@ int main(int argc, char** argv)
           "input",   bin_input_param, 
           "output",  bin_output_param, 
           "verbose", is_verbose_mode);
-
-  // Business logic must be implemented at this point
-
-  /* LOREM IPSUM DOT SIR AMET */
 
   int f1, val;
   char buff;

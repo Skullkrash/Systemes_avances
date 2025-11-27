@@ -210,9 +210,6 @@ int main(int argc, char** argv)
     //     "input",   bin_input_param,
     //     "verbose", is_verbose_mode);
 
-    // Business logic must be implemented at this point
-
-    /* LOREM IPSUM DOT SIR AMET */
     DIR *dir = opendir(bin_input_param);
     if (dir == NULL) {
         perror(strerror(errno)); 

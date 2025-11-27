@@ -13,8 +13,8 @@
 #include<errno.h>
 #include<fcntl.h>
 #include<string.h>
-
 #include<getopt.h>
+#include <unistd.h>
 
 
 #define STDOUT 1
@@ -182,9 +182,6 @@ int main(int argc, char** argv)
           "output",  bin_output_param, 
           "verbose", is_verbose_mode);
 
-  // Business logic must be implemented at this point
-
-  /* LOREM IPSUM DOT SIR AMET */
   int f1, f2;
 
   f1 = open(bin_input_param, O_RDONLY);
