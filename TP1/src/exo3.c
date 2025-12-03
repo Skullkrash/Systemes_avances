@@ -16,9 +16,9 @@
 
 #define MAX_PATH_LENGTH 4096
 
-#define USAGE_SYNTAX "[OPTIONS] -i INPUT"
+#define USAGE_SYNTAX "[OPTIONS] -i INPUT_DIRECTORY"
 #define USAGE_PARAMS "OPTIONS:\n\
-  -i, --input  INPUT_FILE  : input file\n\
+  -i, --input  INPUT_DIRECTORY  : input directory\n\
 ***\n\
   -h, --help    : display this help\n\
 "
