@@ -18,10 +18,14 @@ SRC		:= src
 # define include directory
 INCLUDE	:= include
 
+# define doc dir 
+DOC		:= doc
+
 ifeq ($(OS),Windows_NT)
 MAIN	:= main.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
+DOCDIR := $(DOC)
 FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
@@ -29,6 +33,7 @@ else
 MAIN	:= main
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
+DOCDIR 		:= $(shell find $(DOC) -type d)
 FIXPATH = $1
 RM = rm -f
 MD	:= mkdir -p
@@ -88,3 +93,7 @@ clean:
 run: all
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+
+.PHONY: doc
+doc:
+	doxygen $(DOCDIR)/doxygen.conf
