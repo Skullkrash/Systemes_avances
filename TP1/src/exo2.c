@@ -1,70 +1,39 @@
-/**
- * \file skeleton.c
- * \brief Basic parsing options skeleton.
- * \author Pierre L. <pierre1.leroy@orange.com>
- * \version 0.1
- * \date 10 septembre 2016
- *
- * Basic parsing options skeleton exemple c file.
- */
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<errno.h>
 #include<fcntl.h>
 #include<string.h>
-// exo2 addition
 #include<unistd.h>
 #include<getopt.h>
-
 
 #define STDOUT 1
 #define STDERR 2
 
 #define MAX_PATH_LENGTH 4096
 
-
-#define USAGE_SYNTAX "[OPTIONS] -i INPUT -o OUTPUT"
+#define USAGE_SYNTAX "[OPTIONS] -i INPUT"
 #define USAGE_PARAMS "OPTIONS:\n\
   -i, --input  INPUT_FILE  : input file\n\
-  -o, --output OUTPUT_FILE : output file\n\
 ***\n\
-  -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "
 
-/**
- * Procedure which displays binary usage
- * by printing on stdout all available options
- *
- * \return void
- */
+// Display binary usage by printing on stdout all available options
 void print_usage(char* bin_name)
 {
   dprintf(1, "USAGE: %s %s\n\n%s\n", bin_name, USAGE_SYNTAX, USAGE_PARAMS);
 }
 
 
-/**
- * Procedure checks if variable must be free
- * (check: ptr != NULL)
- *
- * \param void* to_free pointer to an allocated mem
- * \see man 3 free
- * \return void
- */
+// Check if variable must be freed
 void free_if_needed(void* to_free)
 {
   if (to_free != NULL) free(to_free);  
 }
 
 
-/**
- *
- * \see man 3 strndup
- * \see man 3 perror
- * \return
- */
+// Create a duplicate of the optarg global string
 char* dup_optarg_str()
 {
   char* str = NULL;
@@ -82,46 +51,23 @@ char* dup_optarg_str()
 }
 
 
-/**
- * Binary options declaration
- * (must end with {0,0,0,0})
- *
- * \see man 3 getopt_long or getopt
- * \see struct option definition
- */
+// Binary options declaration (must end with {0,0,0,0})
 static struct option binary_opts[] = 
 {
   { "help",    no_argument,       0, 'h' },
-  { "verbose", no_argument,       0, 'v' },
   { "input",   required_argument, 0, 'i' },
-  { "output",  required_argument, 0, 'o' },
   { 0,         0,                 0,  0  } 
 };
 
-/**
- * Binary options string
- * (linked to optionn declaration)
- *
- * \see man 3 getopt_long or getopt
- */ 
+// Binary options string (linked to option declaration)
 const char* binary_optstr = "hvi:o:";
 
 
-
-/**
- * Binary main loop
- *
- * \return 1 if it exit successfully 
- */
 int main(int argc, char** argv)
 {
-  /**
-   * Binary variables
-   * (could be defined in a structure)
-   */
+  // Binary variables
   short int is_verbose_mode = 0;
   char* bin_input_param = NULL;
-  char* bin_output_param = NULL;
 
   // Parsing options
   int opt = -1;
@@ -138,22 +84,10 @@ int main(int argc, char** argv)
           bin_input_param = dup_optarg_str();         
         }
         break;
-      case 'o':
-        //output param
-        if (optarg)
-        {
-          bin_output_param = dup_optarg_str();
-        }
-        break;
-      case 'v':
-        //verbose mode
-        is_verbose_mode = 1;
-        break;
       case 'h':
         print_usage(argv[0]);
 
         free_if_needed(bin_input_param);
-        free_if_needed(bin_output_param);
  
         exit(EXIT_SUCCESS);
       default :
@@ -161,26 +95,15 @@ int main(int argc, char** argv)
     }
   } 
 
-  /**
-   * Checking binary requirements
-   * (could defined in a separate function)
-   */
+  // Checking binary requirements (parameters)
   if (bin_input_param == NULL)
   {
     dprintf(STDERR, "Bad usage! See HELP [--help|-h]\n");
-
-    // Freeing allocated data
     free_if_needed(bin_input_param);
-    free_if_needed(bin_output_param);
-    // Exiting with a failure ERROR CODE (== 1)
     exit(EXIT_FAILURE);
   }
-
-  // Printing params
-  dprintf(1, "** PARAMS **\n%-8s: %s\n%-8s: %s\n%-8s: %d\n", 
-          "input",   bin_input_param, 
-          "output",  bin_output_param, 
-          "verbose", is_verbose_mode);
+  
+  // ---------- ACTUAL MAIN CODE (outputs input file content in reverse order)----------
 
   int f1, val;
   char buff;
@@ -205,7 +128,7 @@ int main(int argc, char** argv)
     write(STDOUT, &buff, 1);
   }
 
-  // libération descripteur
+  // Closing descriptor
   if (close(f1) == -1) {
     perror(strerror(errno));
     exit(1);
@@ -213,8 +136,6 @@ int main(int argc, char** argv)
 
   // Freeing allocated data
   free_if_needed(bin_input_param);
-  free_if_needed(bin_output_param);
-
 
   return EXIT_SUCCESS;
 }
