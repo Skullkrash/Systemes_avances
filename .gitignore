@@ -1,3 +1,5 @@
 *.o
+*.d
 */bin/*
 .vscode/
+TP4/jenkins.war
