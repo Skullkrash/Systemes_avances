@@ -208,7 +208,6 @@ int main(int argc, char** argv)
     thread_data.chunk_start = chunk_start;
     thread_data.chunk_end = chunk_end;
 
-    thread_ids[i] = i;
     printf("\nThread %d processing indexes from %d to %d\n", i + 1, chunk_start, chunk_end - 1);
 
     // Create thread to iterate over its allocated chunk in given thread_function
