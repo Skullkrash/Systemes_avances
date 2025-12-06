@@ -69,8 +69,8 @@ $(MAIN): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS)
 
 # Comment the following to keep .o and .d files after building
-# 	$(RM) $(call FIXPATH,$(OBJECTS))
-# 	$(RM) $(call FIXPATH,$(DEPS))
+	$(RM) $(call FIXPATH,$(OBJECTS))
+	$(RM) $(call FIXPATH,$(DEPS))
 
 # include all .d files
 -include $(DEPS)
