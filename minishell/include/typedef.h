@@ -8,12 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 typedef struct Command {
   char *command;
   size_t length;
   char **args;
-  int arg_count;
+  int arg_count; // May not have a final use, don't forget to delete if unused 
 } Command;
 
 #endif // TYPEDEF_H
