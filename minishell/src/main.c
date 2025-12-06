@@ -66,7 +66,7 @@ int main(int argc, const char *argv[])
 
     while (!is_exiting)
     {
-        printf("minishell> ");
+        printf("%s minishell> ", work_dir);
 
         if (getline(&current_command.command, &current_command.length, stdin) != -1)
         {

@@ -31,3 +31,11 @@ void handle_cd(char** args) {
     }
     work_dir = getcwd(NULL, 0);
 }
+
+void handle_echo(char** args) {
+    int i = 1;
+    while (args[i] != NULL) {
+        printf("%s ", args[i]);
+        i++;
+    } 
+}
