@@ -1,5 +1,7 @@
 #include "../include/internal_commands.h"
 
+char *work_dir;
+
 bool is_exit_command(Command command)
 {
     if (command.command == NULL)

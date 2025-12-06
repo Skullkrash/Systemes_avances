@@ -18,25 +18,15 @@ void free_if_needed(void *to_free)
     }
 }
 
-bool is_exit_command(Command command)
-{
-    if (command.command == NULL) {
-        return false;
-    }
-
-    if (strcmp(command.command, "exit") == 0)
-    {
-        printf("Exiting minishell...\n");
-        return true;
-    }
-
-    return false;
-}
-
 // Handling adding command to history using file descriptors
 void add_to_history(Command command) {
     int history_descriptor;
-    history_descriptor = open("./log/command_history.txt", O_CREAT | O_APPEND | O_WRONLY, 0644);
+    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
+    char history_path[history_size];
+    strcpy(history_path, work_dir);
+    strcat(history_path, "/logs/command_history");
+
+    history_descriptor = open(history_path, O_CREAT | O_APPEND | O_WRONLY, 0644);
 
     if (history_descriptor == -1) {
         perror("Error opening history file");
