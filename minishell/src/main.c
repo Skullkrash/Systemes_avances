@@ -4,6 +4,7 @@
 
 #include "../include/typedef.h"
 #include "../include/parser.h"
+#include "../include/internal_commands.h"
 
 bool is_exiting = false;
 
@@ -16,22 +17,10 @@ void free_if_needed(void *to_free)
         free(to_free);
 }
 
-bool is_exit_command(Command command)
-{
-    if (command.command == NULL)
-        return false;
-
-    if (strcmp(command.command, "exit") == 0)
-    {
-        printf("Exiting minishell...\n");
-        return true;
-    }
-
-    return false;
-}
-
 int main(int argc, const char *argv[])
 {
+    work_dir = getcwd(NULL, 0);
+
     while (!is_exiting)
     {
         printf("minishell> ");
@@ -48,6 +37,17 @@ int main(int argc, const char *argv[])
 
             // executor simple 
             // TODO : executor.c avec gestion des erreurs et des pipes/redirections
+            
+            if (strcmp(current_command.command, "cd") == 0) {
+                handle_cd(current_command.args);
+                continue;
+            }
+
+            if (strcmp(current_command.command, "pwd") == 0) {
+                handle_pwd();
+                continue;
+            }
+
             if (fork() == 0)
             {
                 exit(execvp(current_command.command, current_command.args));
