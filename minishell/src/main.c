@@ -2,18 +2,13 @@
 // BRENNER Quentin, NEAGELY Jeannot
 // EICNAM 2025-2026
 
-#include <stdbool.h>
-#include <unistd.h>
-
+#include "../include/typedef.h"
 #include "../include/parser.h"
 
 bool is_exiting = false;
 
-// Variables de gestion de la ligne d'entrée
-char *line = NULL;
-size_t len = 0;
-
-char** args = NULL;
+// Structure de gestion de la ligne d'entrée
+Command current_command = {NULL, 0, NULL, 0};
 
 void free_if_needed(void *to_free)
 {
@@ -21,12 +16,12 @@ void free_if_needed(void *to_free)
         free(to_free);
 }
 
-bool is_exit_command(const char *command)
+bool is_exit_command(Command command)
 {
-    if (command == NULL)
+    if (command.command == NULL)
         return false;
 
-    if (strcmp(command, "exit") == 0)
+    if (strcmp(command.command, "exit") == 0)
     {
         printf("Exiting minishell...\n");
         return true;
@@ -41,22 +36,21 @@ int main(int argc, const char *argv[])
     {
         printf("minishell> ");
 
-        if (getline(&line, &len, stdin) != -1)
+        if (getline(&current_command.command, &current_command.length, stdin) != -1)
         {
-
-            line[strcspn(line, "\n")] = 0;
-            if (strlen(line) == 0)
+            current_command.command[strcspn(current_command.command, "\n")] = 0;
+            if (strlen(current_command.command) == 0)
                 continue; // si la ligne est vide
 
-            is_exiting = is_exit_command(line);
+            is_exiting = is_exit_command(current_command);
 
-            args = parse_command(line);
+            parse_command(&current_command);
 
             // executor simple 
             // TODO : executor.c avec gestion des erreurs et des pipes/redirections
             if (fork() == 0)
             {
-                exit(execvp(args[0], args));
+                exit(execvp(current_command.command, current_command.args));
             }
 
             wait(NULL);
@@ -67,7 +61,7 @@ int main(int argc, const char *argv[])
         }
     }
     
-    free_if_needed(line);
-    free_if_needed(args);
+    free_if_needed(current_command.command);
+    free_if_needed(current_command.args);
     return 0;
 }

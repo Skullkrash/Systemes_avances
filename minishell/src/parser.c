@@ -5,11 +5,11 @@
 
 #include "../include/parser.h"
 
-char** parse_command(char* line)
+void parse_command(Command *command)
 {
-    char** args = (char**)malloc(sizeof(char*) * (strlen(line) + 1));
+    char** args = (char**)malloc(sizeof(char*) * (strlen(command->command) + 1));
 
-    char* cmd = strtok(line, " ");
+    char* cmd = strtok(command->command, " ");
     int i = 0;
 
     while(cmd != NULL) {
@@ -20,5 +20,5 @@ char** parse_command(char* line)
     
     args[i] = NULL; 
 
-    return args;
+    command->args = args;
 }
