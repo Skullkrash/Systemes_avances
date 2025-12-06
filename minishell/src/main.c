@@ -93,6 +93,11 @@ int main(int argc, const char *argv[])
                 handle_pwd();
                 continue;
             }
+            
+            if (strcmp(current_command.command, "history") == 0) {
+                handle_history();
+                continue;
+            }
 
             if (fork() == 0)
             {

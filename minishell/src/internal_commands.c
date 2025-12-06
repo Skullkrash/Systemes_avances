@@ -39,3 +39,32 @@ void handle_echo(char** args) {
         i++;
     } 
 }
+
+void handle_history() {
+    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
+    char history_path[history_size];
+    strcpy(history_path, work_dir);
+    strcat(history_path, "/logs/command_history");
+
+    int f1, val = 0;
+    char buff;
+
+    f1 = open(history_path, O_RDONLY);
+    if (f1 == -1) {
+        perror(strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    while (val < lseek(f1, 0, SEEK_END)) {
+        lseek(f1, val, SEEK_SET);
+        read(f1, &buff, 1);
+        write(1, &buff, 1);
+        val++;
+    }
+
+    // Closing descriptor
+    if (close(f1) == -1) {
+        perror(strerror(errno));
+        exit(1);
+    }
+}
