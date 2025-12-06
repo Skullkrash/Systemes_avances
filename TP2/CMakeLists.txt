@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Systemes_avances_TP1 LANGUAGES C)
+project(Systemes_avances_TP2 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
