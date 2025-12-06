@@ -42,9 +42,9 @@ int main(int argc, const char *argv[])
             if (strlen(current_command.command) == 0)
                 continue; // si la ligne est vide
 
-            is_exiting = is_exit_command(current_command);
-
             parse_command(&current_command);
+
+            is_exiting = is_exit_command(current_command);
 
             // executor simple 
             // TODO : executor.c avec gestion des erreurs et des pipes/redirections
