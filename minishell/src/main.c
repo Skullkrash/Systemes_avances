@@ -4,6 +4,7 @@
 
 #include "../include/typedef.h"
 #include "../include/parser.h"
+#include "../include/internal_commands.h"
 
 bool is_exiting = false;
 
@@ -71,6 +72,8 @@ void add_to_history(Command command) {
 
 int main(int argc, const char *argv[])
 {
+    work_dir = getcwd(NULL, 0);
+
     while (!is_exiting)
     {
         printf("minishell> ");
@@ -82,14 +85,25 @@ int main(int argc, const char *argv[])
                 continue; // si la ligne est vide
             }
 
-            is_exiting = is_exit_command(current_command);
-
             parse_command(&current_command);
 
+            is_exiting = is_exit_command(current_command);
+            
             add_to_history(current_command);
 
             // executor simple 
             // TODO : executor.c avec gestion des erreurs et des pipes/redirections
+            
+            if (strcmp(current_command.command, "cd") == 0) {
+                handle_cd(current_command.args);
+                continue;
+            }
+
+            if (strcmp(current_command.command, "pwd") == 0) {
+                handle_pwd();
+                continue;
+            }
+
             if (fork() == 0)
             {
                 exit(execvp(current_command.command, current_command.args));
