@@ -8,7 +8,7 @@ bool is_exit_command(Command* command)
         return false;
     }
 
-    if (strcmp(command -> command, "exit") == 0) {
+    if (strcmp(command -> args[0], "exit") == 0) {
         return true;
     }
 

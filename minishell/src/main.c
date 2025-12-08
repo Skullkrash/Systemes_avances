@@ -84,29 +84,29 @@ int main(int argc, const char *argv[])
             // executor simple 
             // TODO : executor.c avec gestion des erreurs et des pipes/redirections
             
-            if (strcmp(current_command.command, "cd") == 0) {
+            if (strcmp(current_command.args[0], "cd") == 0) {
                 handle_cd(current_command.args);
                 continue;
             }
 
-            if (strcmp(current_command.command, "pwd") == 0) {
+            if (strcmp(current_command.args[0], "pwd") == 0) {
                 handle_pwd();
                 continue;
             }
 
-            if (strcmp(current_command.command, "echo") == 0) {
+            if (strcmp(current_command.args[0], "echo") == 0) {
                 handle_echo(current_command.args);
                 continue;
             }
             
-            if (strcmp(current_command.command, "history") == 0) {
+            if (strcmp(current_command.args[0], "history") == 0) {
                 handle_history();
                 continue;
             }
 
             if (fork() == 0)
             {
-                exit(execvp(current_command.command, current_command.args));
+                exit(execvp(current_command.args[0], current_command.args));
             }
 
             wait(NULL);
