@@ -107,6 +107,7 @@ int main(int argc, char** argv)
     // Redirects stdout to pipe write end
     dup2(fd[1], STDOUT_FILENO);
     close(fd[0]);
+    close(fd[1]);
     
     ps_status = execlp("ps", "ps", "eaux", NULL);
 
@@ -126,13 +127,17 @@ int main(int argc, char** argv)
       perror("open /dev/null");
       exit(EXIT_FAILURE);
     }
-    dup2(null_fd, STDOUT);
+    dup2(null_fd, STDOUT_FILENO);
     close(null_fd);
 
     // Executes grep with stdin redirected from pipe
-    close(fd[1]);
     dup2(fd[0], STDIN_FILENO);
+    close(fd[1]);
+    close(fd[0]);
+
     grep_status = execlp("grep", "grep", "^root", NULL);
+
+    close(fd[0]);
     exit(grep_status);
   }
 
