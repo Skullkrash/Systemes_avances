@@ -25,6 +25,16 @@ void handle_cd(char** args) {
         return;
     }
 
+    if (strcmp(args[1], "~") == 0) {
+        char* home = getenv("HOME");
+        if (home != NULL) {
+            args[1] = home;
+        } else {
+            fprintf(stderr, "cd: HOME not set\n");
+            return;
+        }
+    }
+
     if (chdir(args[1]) != 0) {
         perror("cd failed");
     }
