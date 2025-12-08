@@ -2,14 +2,13 @@
 
 char *work_dir;
 
-bool is_exit_command(Command command)
+bool is_exit_command(Command* command)
 {
-    if (command.command == NULL)
+    if (command -> command == NULL) {
         return false;
+    }
 
-    if (strcmp(command.command, "exit") == 0)
-    {
-        printf("Exiting minishell...\n");
+    if (strcmp(command -> command, "exit") == 0) {
         return true;
     }
 

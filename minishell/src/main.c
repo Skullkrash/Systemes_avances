@@ -6,8 +6,6 @@
 #include "../include/parser.h"
 #include "../include/internal_commands.h"
 
-bool is_exiting = false;
-
 // Structure de gestion de la ligne d'entrée
 Command current_command = {NULL, 0, NULL, 0};
 
@@ -64,7 +62,7 @@ int main(int argc, const char *argv[])
 {
     work_dir = getcwd(NULL, 0);
 
-    while (!is_exiting)
+    while(true)
     {
         printf("%s minishell> ", work_dir);
 
@@ -77,7 +75,9 @@ int main(int argc, const char *argv[])
 
             parse_command(&current_command);
 
-            is_exiting = is_exit_command(current_command);
+            if (is_exit_command(&current_command)) {
+                break;
+            }
             
             add_to_history(current_command);
 
@@ -110,14 +110,16 @@ int main(int argc, const char *argv[])
             }
 
             wait(NULL);
-        }
-        else
-        {
-            is_exiting = true;
+        } else {
+            write(1,"\n",1);
+            break;
         }
     }
     
     free_if_needed(current_command.command);
     free_if_needed(current_command.args);
-    return 0;
+    free_if_needed(work_dir);
+
+    write(1, "Exiting minishell...\n", 21);
+    return EXIT_SUCCESS;
 }
