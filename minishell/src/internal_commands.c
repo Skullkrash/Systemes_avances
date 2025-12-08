@@ -35,9 +35,13 @@ void handle_cd(char** args) {
 void handle_echo(char** args) {
     int i = 1;
     while (args[i] != NULL) {
-        printf("%s ", args[i]);
+        write(1, args[i], strlen(args[i]));
+        if (args[i + 1] != NULL) {
+            write(1, " ", 1);
+        }
         i++;
     } 
+    write(1, "\n", 1);
 }
 
 void handle_history() {
