@@ -1,5 +1,6 @@
 #include "../include/internal_commands.h"
 
+const char HISTORY_FILE[] = "/.minishell_history";
 char *work_dir;
 
 bool is_exit_command(Command* command)
@@ -54,10 +55,11 @@ void handle_echo(char** args) {
 }
 
 void handle_history() {
-    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
+    const char* home = getenv("HOME");
+
+    size_t history_size = strlen(home) + strlen(HISTORY_FILE) + 1;
     char history_path[history_size];
-    strcpy(history_path, work_dir);
-    strcat(history_path, "/logs/command_history");
+    snprintf(history_path, history_size, "%s%s", home, HISTORY_FILE);
 
     int f1, val = 0;
     char buff;

@@ -5,6 +5,7 @@
 #include "../include/typedef.h"
 #include "../include/parser.h"
 #include "../include/internal_commands.h"
+extern const char HISTORY_FILE[];
 
 // Structure de gestion de la ligne d'entrée
 Command current_command = {NULL, 0, NULL, 0};
@@ -17,45 +18,29 @@ void free_if_needed(void *to_free)
 }
 
 // Handling adding command to history using file descriptors
-void add_to_history(Command command) {
-    int history_descriptor;
-    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
-    char history_path[history_size];
-    strcpy(history_path, work_dir);
-    strcat(history_path, "/logs/command_history");
+void add_to_history(Command* command) {
+    const char* home = getenv("HOME");
+    size_t path_size = strlen(home) + strlen(HISTORY_FILE) + 1; // accounting for '\0'
+    char* history_path = malloc(path_size);
 
-    history_descriptor = open(history_path, O_CREAT | O_APPEND | O_WRONLY, 0644);
+    snprintf(history_path, path_size, "%s%s", home, HISTORY_FILE);
+
+    int history_descriptor = open(history_path, O_CREAT | O_APPEND | O_WRONLY, 0644);
 
     if (history_descriptor == -1) {
         perror("Error opening history file");
-        exit(1);
+        free(history_path);
+        return;
     }
 
-    size_t nbwrite = 0;
-    char* text_to_write = malloc(strlen(command.command) + 2);
-    text_to_write[0] = '\0';
-    strcat(text_to_write, command.command);
-    
-    int i = 1;
-    while (command.args[i] != NULL)
-    {
-        strcat(text_to_write, " ");
-        strcat(text_to_write, command.args[i]);
-        i++;
-    }
-    strcat(text_to_write, "\n");
-    
-    // Writing in file linked to history_descriptor
-    nbwrite = write(history_descriptor, text_to_write, strlen(text_to_write));
-    if (nbwrite != strlen(text_to_write)) {
-        perror("Error writing to history file");
-        exit(1);
-    }
+    write(history_descriptor, command->command, strlen(command->command));
+    write(history_descriptor, "\n", 1);
 
     if (close(history_descriptor) == -1) {
         perror("Error closing history file descriptor");
         exit(1);
     }
+    free(history_path);
 }
 
 int main(int argc, const char *argv[])
