@@ -15,7 +15,8 @@ bool is_exit_command(Command* command)
     return false;
 }
 
-void handle_pwd() {
+void handle_pwd(char** args) {
+    (void)args; // To avoid unused parameter warning
     printf("%s\n", work_dir);
 }
 
@@ -53,7 +54,9 @@ void handle_echo(char** args) {
     write(1, "\n", 1);
 }
 
-void handle_history() {
+void handle_history(char** args) {
+    (void)args; // To avoid unused parameter warning
+
     size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
     char history_path[history_size];
     strcpy(history_path, work_dir);
