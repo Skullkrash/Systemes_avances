@@ -8,8 +8,9 @@
 void parse_command(Command *command)
 {
     char** args = (char**)malloc(sizeof(char*) * (strlen(command->command) + 1));
+    char* line = strcpy(malloc(strlen(command->command) + 1), command->command);
 
-    char* cmd = strtok(command->command, " ");
+    char* cmd = strtok(line, " ");
     int i = 0;
 
     while(cmd != NULL) {
