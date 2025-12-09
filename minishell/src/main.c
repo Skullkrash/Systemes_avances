@@ -20,10 +20,18 @@ void free_if_needed(void *to_free)
 // Handling adding command to history using file descriptors
 void add_to_history(Command command) {
     int history_descriptor;
-    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
+    const char *home = getenv("HOME");
+    size_t folder_size = strlen(home) + strlen("/logs") + 1;
+    size_t history_size = strlen(home) + strlen("/logs/command_history_minishell") + 1;
     char history_path[history_size];
-    strcpy(history_path, work_dir);
-    strcat(history_path, "/logs/command_history");
+    strcpy(history_path, home);
+    strcat(history_path, "/logs/command_history_minishell");
+    
+    // Create logs directory if it doesn't exist
+    char logs_dir[folder_size];
+    strcpy(logs_dir, home);
+    strcat(logs_dir, "/logs");
+    mkdir(logs_dir, 0755);
 
     history_descriptor = open(history_path, O_CREAT | O_APPEND | O_WRONLY, 0644);
 

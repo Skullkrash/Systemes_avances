@@ -57,10 +57,21 @@ void handle_echo(char** args) {
 void handle_history(char** args) {
     (void)args; // To avoid unused parameter warning
 
-    size_t history_size = strlen(work_dir) + strlen("/logs/command_history") + 1;
+    const char *home = getenv("HOME");
+    if (home == NULL) {
+        fprintf(stderr, "history: HOME path not set in env\n");
+        return;
+    }
+    
+    size_t history_size = strlen(home) + strlen("/logs/command_history_minishell") + 1;
     char history_path[history_size];
-    strcpy(history_path, work_dir);
-    strcat(history_path, "/logs/command_history");
+    strcpy(history_path, home);
+    strcat(history_path, "/logs/command_history_minishell");
+    
+    if (access(history_path, F_OK) == -1) {
+        fprintf(stderr, "history: log file not found\n");
+        return;
+    }
 
     int f1, val = 0;
     char buff;
