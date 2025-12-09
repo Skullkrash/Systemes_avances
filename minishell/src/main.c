@@ -5,6 +5,7 @@
 #include "../include/typedef.h"
 #include "../include/parser.h"
 #include "../include/internal_commands.h"
+#include "../include/executor.h"
 
 // Structure de gestion de la ligne d'entrée
 Command current_command = {NULL, 0, NULL, 0};
@@ -78,36 +79,10 @@ int main(int argc, const char *argv[])
             if (is_exit_command(&current_command)) {
                 break;
             }
-            
+
+            execute_command(&current_command);
+
             add_to_history(current_command);
-
-            // executor simple 
-            // TODO : executor.c avec gestion des erreurs et des pipes/redirections
-            
-            if (strcmp(current_command.args[0], "cd") == 0) {
-                handle_cd(current_command.args);
-                continue;
-            }
-
-            if (strcmp(current_command.args[0], "pwd") == 0) {
-                handle_pwd();
-                continue;
-            }
-
-            if (strcmp(current_command.args[0], "echo") == 0) {
-                handle_echo(current_command.args);
-                continue;
-            }
-            
-            if (strcmp(current_command.args[0], "history") == 0) {
-                handle_history();
-                continue;
-            }
-
-            if (fork() == 0)
-            {
-                exit(execvp(current_command.args[0], current_command.args));
-            }
 
             wait(NULL);
         } else {
