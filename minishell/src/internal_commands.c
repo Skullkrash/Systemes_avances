@@ -21,12 +21,7 @@ void handle_pwd(char** args) {
 }
 
 void handle_cd(char** args) {
-    if (args[1] == NULL) {
-        fprintf(stderr, "cd: expected argument\n");
-        return;
-    }
-
-    if (strcmp(args[1], "~") == 0) {
+    if (strcmp(args[1], "~") == 0 || args[1] == NULL) {
         char* home = getenv("HOME");
         if (home != NULL) {
             args[1] = home;
@@ -34,6 +29,9 @@ void handle_cd(char** args) {
             fprintf(stderr, "cd: HOME not set\n");
             return;
         }
+    } else if (args[2] != NULL) {
+        fprintf(stderr, "cd: too many arguments\n");
+        return;
     }
 
     if (chdir(args[1]) != 0) {
