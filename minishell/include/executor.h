@@ -4,7 +4,8 @@
 #include "typedef.h"
 #include "internal_commands.h"
 
-void execute_command(Command* command);
-void create_child_process(Command* command);
+int execute_command(Command* command);
+void execute_commands(Commands* commands);
+int create_child_process(Command* command);
 
 #endif
