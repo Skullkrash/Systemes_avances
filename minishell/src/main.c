@@ -20,7 +20,9 @@ void free_if_needed(void *to_free)
 void write_prompt(bool is_compact) 
 {
     if (is_compact) {
-        write(STDOUT_FILENO, "\033[1;32mminishell>\033[0m ", 20);
+        write(STDOUT_FILENO, BLUE, 7);
+        write(STDOUT_FILENO, "minishell> ", 20);
+        write(STDOUT_FILENO, COLOR_RESET, 4);
         return;
     } else {
         write(STDERR_FILENO, GREEN, 7);
