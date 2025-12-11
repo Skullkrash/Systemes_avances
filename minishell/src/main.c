@@ -20,18 +20,14 @@ void free_if_needed(void *to_free)
 void write_prompt(bool is_compact) 
 {
     if (is_compact) {
-        write(STDOUT_FILENO, BLUE, 7);
-        write(STDOUT_FILENO, "minishell> ", 20);
+        write(STDOUT_FILENO, BLUE "minishell> ", 11);
         write(STDOUT_FILENO, COLOR_RESET, 4);
-        return;
     } else {
-        write(STDERR_FILENO, GREEN, 7);
-        write(STDERR_FILENO, work_dir, strlen(work_dir));
-        write(STDERR_FILENO, COLOR_RESET, 4);
-        write(STDERR_FILENO, BLUE, 7);
-        write(STDERR_FILENO, " minishell> ", 13);
-        write(STDERR_FILENO, COLOR_RESET, 4);
-        return;
+        write(STDOUT_FILENO, GREEN, 7);
+        write(STDOUT_FILENO, work_dir, strlen(work_dir));
+        write(STDOUT_FILENO, COLOR_RESET, 4);
+        write(STDOUT_FILENO, BLUE" minishell> ", 14);
+        write(STDOUT_FILENO, COLOR_RESET, 4);
     }
 }
 
