@@ -6,6 +6,7 @@
 #include "../include/parser.h"
 #include "../include/internal_commands.h"
 #include "../include/executor.h"
+#include "../include/batch.h"
 
 // Structure de gestion de la ligne d'entrée
 Commands parsed_commands;
@@ -25,7 +26,7 @@ void write_prompt(bool is_compact)
 }
 
 // Handling adding command to history using file descriptors
-void add_to_history(Command command) {
+extern void add_to_history(Command command) {
     int history_descriptor;
     const char *home = getenv("HOME");
     size_t folder_size = strlen(home) + strlen("/logs") + 1;
@@ -74,10 +75,18 @@ void add_to_history(Command command) {
     }
 }
 
+
+
 int main(int argc, const char *argv[])
 {
-    (void)argc;
-    (void)argv;
+    // If there are arguments, see if the option is -c, --command, or --help
+    if (argc > 1) {
+        if (handle_arguments(argc, argv) == EXIT_FAILURE) {
+            return EXIT_FAILURE;
+        } else {
+            return EXIT_SUCCESS;
+        }
+    }
     
     work_dir = getcwd(NULL, 0);
 
