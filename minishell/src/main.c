@@ -17,6 +17,22 @@ void free_if_needed(void *to_free)
     }
 }
 
+void write_prompt(bool is_compact) 
+{
+    if (is_compact) {
+        write(STDOUT_FILENO, "\033[1;32mminishell>\033[0m ", 20);
+        return;
+    } else {
+        write(STDERR_FILENO, GREEN, 7);
+        write(STDERR_FILENO, work_dir, strlen(work_dir));
+        write(STDERR_FILENO, COLOR_RESET, 4);
+        write(STDERR_FILENO, BLUE, 7);
+        write(STDERR_FILENO, " minishell> ", 13);
+        write(STDERR_FILENO, COLOR_RESET, 4);
+        return;
+    }
+}
+
 // Handling adding command to history using file descriptors
 void add_to_history(Command command) {
     int history_descriptor;
@@ -73,7 +89,7 @@ int main(int argc, const char *argv[])
 
     while(true)
     {
-        printf("%s minishell> ", work_dir);
+        write_prompt(0);
 
         if (getline(&current_command.command, &current_command.length, stdin) != -1)
         {
