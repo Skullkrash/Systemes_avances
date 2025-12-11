@@ -15,6 +15,13 @@ bool is_exit_command(Command* command)
     return false;
 }
 
+void handle_exit(Commands* commands) {
+    free_commands(commands);
+    free_if_needed(work_dir);
+    write(1, "Exiting minishell...\n", 21);
+    exit(EXIT_SUCCESS);
+}
+
 void handle_pwd(char** args) {
     (void)args; // To avoid unused parameter warning
     write(STDOUT_FILENO, work_dir, strlen(work_dir));
@@ -94,5 +101,29 @@ void handle_history(char** args) {
     if (close(f1) == -1) {
         perror(strerror(errno));
         exit(1);
+    }
+}
+
+void free_if_needed(void *to_free)
+{
+    if (to_free != NULL) {
+        free(to_free);
+    }
+}
+
+void free_commands(Commands* commands)
+{
+    for (int i = 0; i < commands->command_count; i++) {
+        free_if_needed(commands->commands[i].command);
+        if (commands->commands[i].args != NULL) {
+            for (int j = 0; j < commands->commands[i].arg_count; j++) {
+                free_if_needed(commands->commands[i].args[j]);
+            }
+            free_if_needed(commands->commands[i].args);
+        }
+        
+        if (i < commands->command_count - 1) {
+            free_if_needed(commands->operators[i]);
+        }
     }
 }

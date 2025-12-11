@@ -8,25 +8,18 @@
 #include "../include/executor.h"
 
 // Structure de gestion de la ligne d'entrée
-Command current_command = {NULL, 0, NULL, 0};
-
-void free_if_needed(void *to_free)
-{
-    if (to_free != NULL) {
-        free(to_free);
-    }
-}
+Commands parsed_commands;
 
 void write_prompt(bool is_compact) 
 {
     if (is_compact) {
-        write(STDOUT_FILENO, BLUE "minishell> ", 11);
+        write(STDOUT_FILENO, BLUE "minishell> ", 18);
         write(STDOUT_FILENO, COLOR_RESET, 4);
     } else {
         write(STDOUT_FILENO, GREEN, 7);
         write(STDOUT_FILENO, work_dir, strlen(work_dir));
         write(STDOUT_FILENO, COLOR_RESET, 4);
-        write(STDOUT_FILENO, BLUE" minishell> ", 14);
+        write(STDOUT_FILENO, BLUE" minishell> ", 19);
         write(STDOUT_FILENO, COLOR_RESET, 4);
     }
 }
@@ -83,40 +76,38 @@ void add_to_history(Command command) {
 
 int main(int argc, const char *argv[])
 {
+    (void)argc;
+    (void)argv;
+    
     work_dir = getcwd(NULL, 0);
 
     while(true)
     {
         write_prompt(0);
+        char* line = NULL;
+        size_t len = 0;
 
-        if (getline(&current_command.command, &current_command.length, stdin) != -1)
+        if (getline(&line, &len, stdin) != -1)
         {
-            current_command.command[strcspn(current_command.command, "\n")] = 0;
-            if (strlen(current_command.command) == 0){
+            line[strcspn(line, "\n")] = 0;
+            if (strlen(line) == 0){
                 continue; // si la ligne est vide
             }
 
-            parse_command(&current_command);
+            split_line(line, &parsed_commands);
 
-            if (is_exit_command(&current_command)) {
-                break;
+            if (parsed_commands.command_count > 0) {
+                execute_commands(&parsed_commands);
             }
+            // we should pass the entire line to add_to_history
+            // add_to_history(&line);
 
-            execute_command(&current_command);
-
-            add_to_history(current_command);
-
-            wait(NULL);
+            free(line);
+            line = NULL;
+            len = 0;
         } else {
             write(1,"\n",1);
             break;
         }
     }
-    
-    free_if_needed(current_command.command);
-    free_if_needed(current_command.args);
-    free_if_needed(work_dir);
-
-    write(1, "Exiting minishell...\n", 21);
-    return EXIT_SUCCESS;
 }
