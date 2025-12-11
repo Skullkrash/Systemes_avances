@@ -17,11 +17,12 @@ bool is_exit_command(Command* command)
 
 void handle_pwd(char** args) {
     (void)args; // To avoid unused parameter warning
-    printf("%s\n", work_dir);
+    write(STDOUT_FILENO, work_dir, strlen(work_dir));
+    write(STDOUT_FILENO, "\n", 1);
 }
 
 void handle_cd(char** args) {
-    if (strcmp(args[1], "~") == 0 || args[1] == NULL) {
+    if (args[1] == NULL || strcmp(args[1], "~") == 0) {
         char* home = getenv("HOME");
         if (home != NULL) {
             args[1] = home;
@@ -36,7 +37,9 @@ void handle_cd(char** args) {
 
     if (chdir(args[1]) != 0) {
         perror("cd failed");
+        return;
     }
+    
     work_dir = getcwd(NULL, 0);
 }
 
