@@ -1,5 +1,10 @@
 #include "../include/batch.h"
 
+// Possible options to use when launching minishell
+const char *minishell_options[] = {"-c", "--command", "--help", NULL};
+
+Command batch_command = {NULL, 0, NULL, 0};
+
 int handle_arguments(int argc, const char *argv[]) {
     if (argc > 3)
     {
@@ -27,8 +32,8 @@ int handle_arguments(int argc, const char *argv[]) {
     }
     else if (strcmp(option, "-c") == 0 || strcmp(option, "--command") == 0) {
         if (argc > 2) {
-            batch_command.command = strdup(argv[2]);
-            batch_command.length = strlen(argv[2]);
+            // batch_command.command = strdup(argv[2]);
+            // batch_command.length = strlen(argv[2]);
 
             // parse_command(&current_command);
             // execute_command(&current_command);
@@ -38,6 +43,7 @@ int handle_arguments(int argc, const char *argv[]) {
             // free_if_needed(current_command.args);
 
             // return batch_command;
+            printf("Executing command: %s\n", argv[2]);
             return EXIT_SUCCESS;
         } else {
             fprintf(stderr, "Error: No command provided after option %s. Please use --help for usage details.\n", option);

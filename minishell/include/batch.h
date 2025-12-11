@@ -3,9 +3,7 @@
 
 #include "typedef.h"
 
-// Possible options to use when launching minishell
-const char *minishell_options[] = {"-c", "--command", "--help", NULL};
-extern Command batch_command = {NULL, 0, NULL, 0};
+extern Command batch_command;
 
 int handle_arguments(int argc, const char *argv[]);
 
