@@ -3,9 +3,7 @@
 
 #include "typedef.h"
 
-// Découpe une ligne de commande en tokens (arguments).
-// Retourne un tableau de chaînes de caractères terminé par NULL.
-// L'appelant doit libérer le tableau retourné.
-void parse_command(Command *command);
+void parse_command(Command* command);
+void split_line(const char* line, Commands *commands);
 
-#endif // PARSER_H
+#endif
