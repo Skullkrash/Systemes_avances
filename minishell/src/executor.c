@@ -22,12 +22,12 @@ int create_child_process(Command* command)
         if (WIFEXITED(status)) {
             return WEXITSTATUS(status);
         } else {
-            return -1;;
+            return EXIT_FAILURE;
         }
 
     } else {
         perror("Fork failed");
-        return -1;
+        return EXIT_FAILURE;
     }
 }
 
@@ -54,19 +54,19 @@ void execute_commands(Commands* commands)
 int execute_command(Command* command)
 {
     if (command->args == NULL || command->args[0] == NULL) {
-        return -1; 
+        return EXIT_FAILURE; 
     }
 
     // Check for internal commands, if found point to the corresponding function in internal_cmds[]
     for (int i = 0; internal_cmds_list[i] != NULL; i++) {
         if (strcmp(command->args[0], internal_cmds_list[i]) == 0) {
             internal_cmds[i](command->args);
-            return 0;
+            return EXIT_SUCCESS;
         }
     }
 
-    int id = create_child_process(command);
-    return id; 
+    int status = create_child_process(command);
+    return status; 
 }
 
  
