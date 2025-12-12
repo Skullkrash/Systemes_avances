@@ -26,7 +26,7 @@ void write_prompt(bool is_compact)
 }
 
 // Handling adding command to history using file descriptors
-extern void add_to_history(Command command) {
+extern void add_to_history(char* command_line) {
     int history_descriptor;
     const char *home = getenv("HOME");
     size_t folder_size = strlen(home) + strlen("/logs") + 1;
@@ -49,22 +49,11 @@ extern void add_to_history(Command command) {
     }
 
     size_t nbwrite = 0;
-    char* text_to_write = malloc(strlen(command.command) + 2);
-    text_to_write[0] = '\0';
-    strcat(text_to_write, command.command);
-    
-    int i = 1;
-    while (command.args[i] != NULL)
-    {
-        strcat(text_to_write, " ");
-        strcat(text_to_write, command.args[i]);
-        i++;
-    }
-    strcat(text_to_write, "\n");
+    command_line[strcspn(command_line, "\n")] = '\n'; // ensure newline at end
     
     // Writing in file linked to history_descriptor
-    nbwrite = write(history_descriptor, text_to_write, strlen(text_to_write));
-    if (nbwrite != strlen(text_to_write)) {
+    nbwrite = write(history_descriptor, command_line, strlen(command_line));
+    if (nbwrite != strlen(command_line)) {
         perror("Error writing to history file");
         exit(1);
     }
@@ -108,8 +97,7 @@ int main(int argc, const char *argv[])
             if (parsed_commands.command_count > 0) {
                 execute_commands(&parsed_commands);
             }
-            // we should pass the entire line to add_to_history
-            // add_to_history(&line);
+            add_to_history(line);
 
             free(line);
             line = NULL;
