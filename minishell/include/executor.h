@@ -33,4 +33,6 @@ int create_child_process(Command* command, bool is_background);
  */
 void check_bg_processes(BackgroundProcess* bg_processes); 
 
+int execute_pipes(Commands* commands, int start_index, int end_index);
+
 #endif
