@@ -2,19 +2,6 @@
 
 char *work_dir;
 
-bool is_exit_command(Command* command)
-{
-    if (command -> command == NULL) {
-        return false;
-    }
-
-    if (strcmp(command -> args[0], "exit") == 0) {
-        return true;
-    }
-
-    return false;
-}
-
 void handle_exit(Commands* commands) {
     free_commands(commands);
     free_if_needed(work_dir);
