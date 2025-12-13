@@ -2,6 +2,7 @@
 #define INTERNAL_COMMANDS_H
 
 #include "typedef.h"
+#include "aliases.h"
 
 extern char *work_dir;
 
@@ -29,6 +30,12 @@ void handle_echo(char** args);
  * @param args voided
  */
 void handle_history(char** args);
+
+/**
+ * @brief Handles writing inputted commands in history file (~/minishell_logs/command_history).
+ * @param command_line The entire command line that needs to be added in the history file.
+ */
+void add_to_history(char* command_line);
 
 /**
  * @brief Built-in exit command handler.

@@ -3,6 +3,7 @@
 
 #include "typedef.h"
 #include "internal_commands.h"
+#include "aliases.h"
 
 /**
  * @brief Executes a single command, checking for internal commands first.

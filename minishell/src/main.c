@@ -26,47 +26,6 @@ void write_prompt(bool is_compact)
     }
 }
 
-// Handling adding command to history using file descriptors
-extern void add_to_history(char* command_line) {
-    int history_descriptor;
-    const char *home = getenv("HOME");
-    size_t folder_size = strlen(home) + strlen("/logs") + 1;
-    size_t history_size = strlen(home) + strlen("/logs/command_history_minishell") + 1;
-    char history_path[history_size];
-    strcpy(history_path, home);
-    strcat(history_path, "/logs/command_history_minishell");
-    
-    // Create logs directory if it doesn't exist
-    char logs_dir[folder_size];
-    strcpy(logs_dir, home);
-    strcat(logs_dir, "/logs");
-    mkdir(logs_dir, 0755);
-
-    history_descriptor = open(history_path, O_CREAT | O_APPEND | O_WRONLY, 0644);
-
-    if (history_descriptor == -1) {
-        perror("Error opening history file");
-        exit(1);
-    }
-
-    size_t nbwrite = 0;
-    command_line[strcspn(command_line, "\n")] = '\n'; // ensure newline at end
-    
-    // Writing in file linked to history_descriptor
-    nbwrite = write(history_descriptor, command_line, strlen(command_line));
-    if (nbwrite != strlen(command_line)) {
-        perror("Error writing to history file");
-        exit(1);
-    }
-
-    if (close(history_descriptor) == -1) {
-        perror("Error closing history file descriptor");
-        exit(1);
-    }
-}
-
-
-
 int main(int argc, const char *argv[])
 {
     // If there are arguments, see if the option is -c, --command, or --help
@@ -95,6 +54,34 @@ int main(int argc, const char *argv[])
             }
 
             split_line(line, &parsed_commands);
+
+            // Check for aliases in parsed_commands and replace them
+            for (int i = 0; i < parsed_commands.command_count; i++) {
+                Command *cmd = &parsed_commands.commands[i];
+
+                // If args is empty or has more than one element, continue
+                if (cmd->args == NULL || cmd->args[0] == NULL  || cmd->arg_count > 1) {
+                    continue;
+                }
+
+                // If command is an alias, free the old command and args, and replace them with the alias definition
+                if (is_alias(cmd->args[0]) == 0) {
+                    const char *alias_command = get_alias_command(cmd->args[0]);
+                    if (alias_command == NULL) {
+                        fprintf(stderr, "Error retrieving alias command for %s\n", cmd->args[0]);
+                        return EXIT_FAILURE;
+                    }
+
+                    free_if_needed(cmd->command);
+                    for (int i = 0; i < cmd->arg_count; i++)
+                    {
+                        free_if_needed(cmd->args[i]);
+                    }
+                    
+                    cmd->command = strdup(alias_command);
+                    parse_command(cmd);
+                }
+            }
 
             if (parsed_commands.command_count > 0) {
                 execute_commands(&parsed_commands, &bg_processes);

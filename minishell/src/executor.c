@@ -4,8 +4,8 @@
 
 #include "../include/executor.h"
 
-const char* internal_cmds_list[] = {"cd", "pwd", "echo", "history", NULL};
-void (*internal_cmds[])(char **) = {&handle_cd, &handle_pwd, &handle_echo, &handle_history, NULL};
+const char* internal_cmds_list[] = {"cd", "pwd", "echo", "history", "alias", "unalias", NULL};
+void (*internal_cmds[])(char **) = {&handle_cd, &handle_pwd, &handle_echo, &handle_history, &handle_alias, &handle_unalias, NULL};
 
 int create_child_process(Command* command, bool is_background)
 {

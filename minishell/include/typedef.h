@@ -19,6 +19,8 @@
 #define BLUE "\033[1;34m"
 #define COLOR_RESET "\033[0m"
 
+// WILL NEED TO COMMENT THE STRUCTURES FOR DOXYGEN DOC GENERATION
+
 typedef struct Command {
   char *command;
   size_t length;
@@ -41,5 +43,10 @@ typedef struct BackgroundProcess {
   int count;
   Jobs processes[MAX_BG_PROCESSES];
 } BackgroundProcess;
+
+typedef struct Alias {
+  char *name;
+  char *command;
+} Alias;
 
 #endif // TYPEDEF_H

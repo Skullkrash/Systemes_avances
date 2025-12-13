@@ -62,21 +62,80 @@ void split_line(const char* line, Commands *commands)
 }
 
 void parse_command(Command* command) {
+    // Simple parser that splits command string into arguments based on spaces and handles quotes
     char* cmd_copy = strdup(command->command);
     char** args = (char**)malloc(sizeof(char*) * 64);
     
-    char* arg = strtok(cmd_copy, " ");
     int i = 0;
+    bool in_quotes = false;
+    bool in_double_quotes = false;
+    char* cmd_parser = cmd_copy;
+    char* arg_start = cmd_copy;
+    int arg_length = 0;
+    bool opening_quote_found = false;
+    bool closing_quote_found = false;
     
-    while(arg != NULL) {
-        args[i] = strdup(arg);
-        i++;
-        arg = strtok(NULL, " ");
+    while (*cmd_parser) {
+        if (*cmd_parser == '\'' && !in_double_quotes) {
+            opening_quote_found = in_quotes == false ? true : false;
+            closing_quote_found = in_quotes == true ? true : false;
+            in_quotes = !in_quotes;
+        } else if (*cmd_parser == '"' && !in_quotes) {
+            opening_quote_found = in_double_quotes == false ? true : false;
+            closing_quote_found = in_double_quotes == true ? true : false;
+            in_double_quotes = !in_double_quotes;
+        } else if (*cmd_parser == ' ' && !in_quotes && !in_double_quotes) {
+            if (arg_length > 0) {
+                args[i++] = strndup(arg_start, arg_length);
+                arg_length = 0;
+            }
+            cmd_parser++;
+            arg_start = cmd_parser;
+            continue;
+        }
+
+        if (opening_quote_found) {
+            opening_quote_found = !opening_quote_found;
+
+            if (arg_length > 0) {
+                args[i++] = strndup(arg_start, arg_length);
+                arg_length = 0;
+            }
+            cmd_parser++;
+            arg_start = cmd_parser;
+            continue;
+        }
+
+        if (closing_quote_found) {
+            closing_quote_found = !closing_quote_found;
+
+            if (arg_length > 0) {
+                char *arg = strndup(arg_start, arg_length);
+                // Remove quotes from the argument
+                for (int j = 0; arg[j]; j++) {
+                    if (arg[j] == '\'' || arg[j] == '"') {
+                        memmove(&arg[j], &arg[j + 1], strlen(arg) - j);
+                        j--;
+                    }
+                }
+                args[i++] = arg;
+                arg_length = 0;
+            }
+            cmd_parser++;
+            arg_start = cmd_parser;
+            continue;
+        }
+        arg_length++;
+        cmd_parser++;
+    }
+    
+    if (arg_length > 0) {
+        args[i++] = strndup(arg_start, arg_length);
     }
     
     args[i] = NULL;
     command->args = args;
     command->arg_count = i;
-    
+
     free(cmd_copy);
 }
