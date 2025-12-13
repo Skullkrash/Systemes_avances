@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #define MAX_COMMANDS 3
+#define MAX_BG_PROCESSES 10
 
 #define GREEN "\033[1;32m"
 #define BLUE "\033[1;34m"
@@ -31,5 +32,14 @@ typedef struct Commands {
   int command_count;
 } Commands;
 
+typedef struct Jobs {
+  pid_t pid;
+  char* command;
+} Jobs;
+
+typedef struct BackgroundProcess {
+  int count;
+  Jobs processes[MAX_BG_PROCESSES];
+} BackgroundProcess;
 
 #endif // TYPEDEF_H

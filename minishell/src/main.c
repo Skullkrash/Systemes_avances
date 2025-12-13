@@ -10,6 +10,7 @@
 
 // Structure de gestion de la ligne d'entrée
 Commands parsed_commands;
+BackgroundProcess bg_processes = {.count = 0};
 
 void write_prompt(bool is_compact) 
 {
@@ -81,6 +82,7 @@ int main(int argc, const char *argv[])
 
     while(true)
     {
+        check_bg_processes(&bg_processes);
         write_prompt(0);
         char* line = NULL;
         size_t len = 0;
@@ -95,7 +97,7 @@ int main(int argc, const char *argv[])
             split_line(line, &parsed_commands);
 
             if (parsed_commands.command_count > 0) {
-                execute_commands(&parsed_commands);
+                execute_commands(&parsed_commands, &bg_processes);
             }
             add_to_history(line);
 

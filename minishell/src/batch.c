@@ -3,6 +3,7 @@
 // Possible options to use when launching minishell
 const char *minishell_options[] = {"-c", "--command", "--help", NULL};
 Commands batch_command;
+extern BackgroundProcess bg_processes;
 
 int handle_arguments(int argc, const char *argv[]) {
     if (argc > MAX_ARGUMENTS)
@@ -33,12 +34,12 @@ int handle_arguments(int argc, const char *argv[]) {
         if (argc > MAX_ARGUMENTS - 1) {
             split_line(strdup(argv[2]), &batch_command);
 
-            execute_commands(&batch_command);
+            execute_commands(&batch_command, &bg_processes);
 
             // add_to_history(batch_command);
 
             free_commands(&batch_command);
-            
+
             return EXIT_SUCCESS;
         } else {
             fprintf(stderr, "Error: No command provided after option %s. Please use --help for usage details.\n", option);

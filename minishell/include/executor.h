@@ -26,4 +26,10 @@ void execute_commands(Commands* commands, BackgroundProcess* bg_processes);
  */
 int create_child_process(Command* command, bool is_background);
 
+/**
+ * @brief Checks the status of background processes and cleans up finished ones.
+ * @param bg_processes Pointer to the BackgroundProcess struct managing background jobs.
+ */
+void check_bg_processes(BackgroundProcess* bg_processes); 
+
 #endif
