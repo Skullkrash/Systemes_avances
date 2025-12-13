@@ -51,8 +51,31 @@ void execute_commands(Commands* commands, BackgroundProcess* bg_processes)
 
         bool is_background = false;
 
-        if (commands->operators[i] && strcmp(commands->operators[i], "&") == 0) {
+        if (i < commands->command_count - 1 && commands->operators[i] && strcmp(commands->operators[i], "&") == 0) {
             is_background = true;
+        }
+
+        // pipe handling
+        if (i < commands->command_count - 1 && commands->operators[i] && strcmp(commands->operators[i], "|") == 0) {
+            int pipe_end = i;
+            while (pipe_end < commands->command_count - 1 && commands->operators[pipe_end] &&
+                strcmp(commands->operators[pipe_end], "|") == 0) {
+                pipe_end++;
+            }
+            last_status = execute_pipes(commands, i, pipe_end);
+    
+            if (pipe_end < commands->command_count - 1 && commands->operators[pipe_end] != NULL) {
+                if (strcmp(commands->operators[pipe_end], "&&") == 0 && last_status != 0) {
+                    i = pipe_end + 1;
+                    continue;
+                }  
+                if (strcmp(commands->operators[pipe_end], "||") == 0 && last_status == 0) {
+                    i = pipe_end + 1;
+                    continue;
+                }
+            }
+            i = pipe_end;
+            continue;
         }
 
         bool is_internal = false;
@@ -124,3 +147,74 @@ void check_bg_processes(BackgroundProcess* bg_processes)
         }
     }
 }
+
+int execute_pipes(Commands* commands, int start_index, int end_index) {
+  
+    int num_commands = end_index - start_index + 1;
+    
+    if (num_commands == 1) {
+        return execute_command(&commands->commands[start_index], false); // no pipes, just execute the command
+    }
+
+    int pipe_fds[2 * (num_commands - 1)]; // we need 2 * (num_commands - 1) file descriptors
+    pid_t pids[num_commands];
+
+    for (int i = 0; i < num_commands - 1; i++) {
+        if (pipe(pipe_fds + i * 2) < 0) {
+            perror("pipe");
+            return EXIT_FAILURE;
+        }
+    }
+
+    for (int i = 0; i < num_commands; i++) {
+        pids[i] = fork(); 
+        if (pids[i] < 0) { // fork failed, close pipes 
+            perror("fork");
+            for (int j = 0; j < 2 * (num_commands - 1); j++) {
+                close(pipe_fds[j]);
+            } 
+            return EXIT_FAILURE;
+        }
+
+        if (pids[i] == 0) { // child process
+            // redirects, case first command
+            if (i > 0) {
+                dup2(pipe_fds[2 * (i - 1)], STDIN_FILENO);
+            }
+            // case last command
+            if (i < num_commands - 1) {
+                dup2(pipe_fds[i * 2 + 1], STDOUT_FILENO);
+            }
+            // close all pipe fds in child
+            for (int j = 0; j < 2* (num_commands - 1); j++) {
+                close(pipe_fds[j]);
+            }
+
+            Command* cmd = &commands->commands[start_index + i];
+            execvp(cmd->args[0], cmd->args);
+            perror(cmd->args[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    for (int i = 0; i < 2 * (num_commands - 1); i++) {
+        close(pipe_fds[i]);
+    }
+
+    // wait for childrens
+    int status, last_status = 0;;
+    for (int i = 0; i < num_commands; i++) {
+        if (waitpid(pids[i], &status, 0) < 0) {
+            perror("waitpid");
+        }
+        
+        if (i == num_commands - 1) {
+            if (WIFEXITED(status)) {
+                last_status = WEXITSTATUS(status);
+            } else {
+                last_status = EXIT_FAILURE;
+            }
+        }
+    }
+    return last_status;
+}    
