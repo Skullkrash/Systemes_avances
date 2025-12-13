@@ -18,6 +18,20 @@ int detect_operator(const char* p, const char** op_found) {
     return 0;
 }
 
+char* trim_whitespace(const char* line) {
+    if (line == NULL) return NULL;
+
+    while (*line == ' ' || *line == '\t') line++;
+    if (*line == '\0') return strdup("");
+
+    const char* end = line + strlen(line) - 1;
+    while (end > line && (*end == ' ' || *end == '\t')) end--;
+    
+    size_t length = end - line + 1;
+    char* trimmed = strndup(line, length);
+    return trimmed;
+}
+
 void split_line(const char* line, Commands *commands)
 {
     int index = 0;
@@ -27,33 +41,41 @@ void split_line(const char* line, Commands *commands)
 
     free_commands(commands);
 
+    while(*start == ' ' || *start == '\t') {
+        start++;
+        pos++;
+    }
+
     while (*pos && index < MAX_COMMANDS) {
         const char* op = NULL;
         int op_len = detect_operator(pos, &op);
         if (op_len > 0) {
             size_t cmd_length = pos - start;
-            commands->commands[index].command = strndup(start, cmd_length);
+            char* cmd = strndup(start, cmd_length);
+            commands->commands[index].command = trim_whitespace(cmd);
             commands->operators[index] = strdup(op);
+            free(cmd);
+
             index++;
             pos += op_len;
             start = pos;
+
+            while (*start == ' ' || *start == '\t') {
+                start++;
+                pos++;
+            } 
         } else {
             pos++;
         }
     }
 
     if (*start && index < MAX_COMMANDS) {
-        while (*start == ' ' || *start == '\t') start++;
-        const char* end = start + strlen(start);
-        while (end > start && (*(end-1) == ' ' || *(end-1) == '\t')) end--;
-        if (end > start) { 
-            size_t cmd_length = end - start;
-            commands->commands[index].command = strndup(start, cmd_length);
-            commands->operators[index] = NULL;
-            index++;
-        }
+        char* cmd = strdup(start);
+        commands->commands[index].command = trim_whitespace(cmd);
+        commands->operators[index] = NULL;
+        free(cmd);
+        index++;
     }
-
 
     for (int i = 0; i < index; i++) {
         parse_command(&commands->commands[i]);
