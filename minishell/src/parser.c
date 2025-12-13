@@ -7,55 +7,53 @@
 
 const char* OPERATORS[] = {"&&", "||", "&", "|", NULL}; // SUCCESS AND, FAIL OR, BACKGROUND, PIPE  
 
+int detect_operator(const char* p, const char** op_found) {
+    for (int i = 0; OPERATORS[i] != NULL; i++) {
+        size_t len = strlen(OPERATORS[i]);
+        if (strncmp(p, OPERATORS[i], len) == 0) {
+            if (op_found) *op_found = OPERATORS[i];
+            return (int)len;
+        }
+    }
+    return 0;
+}
+
 void split_line(const char* line, Commands *commands)
 {
-    size_t num_operators = sizeof(OPERATORS) / sizeof(OPERATORS[0]) - 1;
     int index = 0;
+    commands->command_count = 0;
+    const char* start = line;
+    const char* pos = line;
 
-    commands->command_count = 0; 
-    const char* current = line;
-    const char* last = line;
+    free_commands(commands);
 
-    while(*current && index < MAX_COMMANDS){
-        const char* next_op = NULL;
-        const char* found_op = NULL;
-
-        // find the next operator in the line
-        for(size_t i = 0; i < num_operators; i++) {
-            const char* pos_op = strstr(current, OPERATORS[i]);
-            if(pos_op && (!next_op || pos_op < next_op)) {
-                next_op = pos_op;
-                found_op = OPERATORS[i];
-            }
-        }
-
-        // freeing if needed past command
-        for (int i = 0; i < commands ->command_count; i++) {
-            free(commands->commands[i].command);
-            free(commands->commands[i].args);
-            if (i < commands->command_count - 1) { // we only have command_count - 1 operators
-                free(commands->operators[i]);
-            }
-        }
-        
-        // if an operator is found, split the command
-        if(next_op) {
-            size_t cmd_length = next_op - last;
-            commands->commands[index].command = strndup(last, cmd_length);
-            commands->operators[index] = strdup(found_op);
-            index++; 
-            current = next_op + strlen(found_op);
-            last = current;
+    while (*pos && index < MAX_COMMANDS) {
+        const char* op = NULL;
+        int op_len = detect_operator(pos, &op);
+        if (op_len > 0) {
+            size_t cmd_length = pos - start;
+            commands->commands[index].command = strndup(start, cmd_length);
+            commands->operators[index] = strdup(op);
+            index++;
+            pos += op_len;
+            start = pos;
         } else {
-            break; 
+            pos++;
         }
     }
 
-    if(*last && index < MAX_COMMANDS) {
-        commands->commands[index].command = strdup(last);
-        commands->operators[index] = NULL; 
-        index++;    
+    if (*start && index < MAX_COMMANDS) {
+        while (*start == ' ' || *start == '\t') start++;
+        const char* end = start + strlen(start);
+        while (end > start && (*(end-1) == ' ' || *(end-1) == '\t')) end--;
+        if (end > start) { 
+            size_t cmd_length = end - start;
+            commands->commands[index].command = strndup(start, cmd_length);
+            commands->operators[index] = NULL;
+            index++;
+        }
     }
+
 
     for (int i = 0; i < index; i++) {
         parse_command(&commands->commands[i]);
