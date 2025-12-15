@@ -28,7 +28,11 @@ int create_child_process(Command* command, bool is_background)
                 close(in_fd);
             }
         }
-        exit(execvp(command->args[0], command->args));
+        execvp(command->args[0], command->args);
+
+        // case execvp fails
+        fprintf(stderr, "minishell: command not found: %s\n", command->args[0]);
+        exit(EXIT_FAILURE);
     } else if (pid > 0) {
         if (is_background) { // don't wait for bg processes
             return pid;
@@ -198,9 +202,9 @@ int execute_pipes(Commands* commands, int start_index, int end_index) {
                 close(pipe_fds[j]);
             }
 
-            Command* cmd = &commands->commands[start_index + i];
-            execvp(cmd->args[0], cmd->args);
-            perror(cmd->args[0]);
+            Command* command = &commands->commands[start_index + i];
+            execvp(command->args[0], command->args);
+            fprintf(stderr, "minishell: command not found: %s\n", command->args[0]);
             exit(EXIT_FAILURE);
         }
     }
