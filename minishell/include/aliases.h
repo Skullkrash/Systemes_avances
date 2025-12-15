@@ -2,8 +2,7 @@
 #define ALIASES_H
 
 #include "typedef.h"
-#include <linux/limits.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 #define MAX_ALIASES 20
 
