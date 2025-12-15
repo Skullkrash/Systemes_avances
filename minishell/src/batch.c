@@ -1,7 +1,16 @@
+/**
+ * @file batch.c
+ * @brief Handles batch mode execution for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
+
 #include "../include/batch.h"
 
-// Possible options to use when launching minishell
+/** List of possible options to use for batch mode */
 const char *minishell_options[] = {"-c", "--command", "--help", NULL};
+
+/** The command to be run */
 Commands batch_command;
 extern BackgroundProcess bg_processes;
 

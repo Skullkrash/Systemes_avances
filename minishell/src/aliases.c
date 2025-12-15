@@ -1,3 +1,10 @@
+/**
+ * @file aliases.c
+ * @brief Implementation of alias handling for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
+
 #include "../include/aliases.h"
 
 /*
@@ -15,7 +22,10 @@ Command possibilities :
     - unalias -a : remove all aliases
 */
 
-Alias aliases_list[MAX_ALIASES] = {0};
+/** The array of temporary aliases */
+Alias aliases_list[MAX_ALIASES] = { {NULL, NULL} };
+
+/** The current number of aliases */
 int alias_count = 0;
 
 void handle_alias(char **args) {

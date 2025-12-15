@@ -1,6 +1,9 @@
-// Projet de minishell
-// BRENNER Quentin, NEAGELY Jeannot
-// EICNAM 2025-2026
+/**
+ * @file main.c
+ * @brief Main entry point for the minishell application.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
 
 #include "../include/typedef.h"
 #include "../include/parser.h"

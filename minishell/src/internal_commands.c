@@ -1,5 +1,13 @@
+/**
+ * @file internal_commands.c
+ * @brief Implementation of internal commands for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
+
 #include "../include/internal_commands.h"
 
+/** The path to the current workdir */
 char *work_dir;
 
 void handle_exit(Commands* commands) {

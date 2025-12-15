@@ -1,7 +1,9 @@
-// parser.c
-// fichier contenant le necessaire pour parser les commandes pour le minishell
-// BRENNER Quentin, NEAGELY Jeannot
-// EICNAM 2025-2026
+/**
+ * @file parser.c
+ * @brief Implementation of the command line parser for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
 
 #include "../include/parser.h"
 

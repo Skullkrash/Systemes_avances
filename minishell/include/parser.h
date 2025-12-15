@@ -32,4 +32,4 @@ void split_line(const char* line, Commands *commands);
  */
 void parse_command(Command* command);
 
-#endif
+#endif // PARSER_H

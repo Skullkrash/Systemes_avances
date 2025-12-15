@@ -1,6 +1,23 @@
 #ifndef TYPEDEF_H
 #define TYPEDEF_H
 
+/**
+ * \mainpage Minishell
+ *
+ * \section intro_sec Introduction
+ * Welcome to the documentation of the Minishell project for EICNAM 2025.
+ *
+ * \section features_sec Features
+ * - Command parsing and execution
+ * - Alias management
+ * - Batch mode
+ * - Command history
+ * - Internal commands (cd, pwd, echo, etc.)
+ *
+ * \section usage_sec Usage
+ * See the README for usage instructions.
+ */
+
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -19,7 +36,7 @@
 #define BLUE "\033[1;34m" 
 #define COLOR_RESET "\033[0m"
 
-// Structure to hold a single command and its details
+/** Structure to hold a single command and its details */ 
 typedef struct Command {
   char*   command;            // Original command string
   size_t  length;             // Length of the command string
@@ -27,20 +44,20 @@ typedef struct Command {
   int     arg_count;          // May not have a final use, don't forget to delete if unused 
 } Command;
 
-// Structure to hold multiple commands and their operators
+/** Structure to hold multiple commands and their operators */
 typedef struct Commands {
   Command commands[MAX_COMMANDS];         // Array of parsed commands
   char*   operators[MAX_COMMANDS];        // Operators between commands
   int     command_count;                  // Number of commands parsed
 } Commands;
 
-// Structure to hold background job details
+/** Structure to hold background job details */
 typedef struct Jobs {
   pid_t   pid;                // Process ID
   char*   command;            // Command string
 } Jobs;
 
-// Structure to manage background processes
+/** Structure to manage background processes */
 typedef struct BackgroundProcess {
   int     count;                              // Number of background processes
   Jobs    processes[MAX_BG_PROCESSES];        // Array of background processes

@@ -1,10 +1,16 @@
-// fichier contenant le necessaire pour executer les commandes pour le minishell
-// BRENNER Quentin, NEAGELY Jeannot
-// EICNAM 2025-2026
+/**
+ * @file executor.c
+ * @brief Implementation of command execution for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
 
 #include "../include/executor.h"
 
+/** List of internal commands */
 const char* internal_cmds_list[] = {"cd", "pwd", "echo", "history", "alias", "unalias", NULL};
+
+/** List of pointers to internal command functions  */
 void (*internal_cmds[])(char **) = {&handle_cd, &handle_pwd, &handle_echo, &handle_history, &handle_alias, &handle_unalias, NULL};
 
 int create_child_process(Command* command, bool is_background)

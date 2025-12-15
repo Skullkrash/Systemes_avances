@@ -50,4 +50,4 @@ int execute_pipes(Commands* commands, int start_index, int end_index);
  */
 int setup_redirections(Command* command);
 
-#endif
+#endif // EXECUTOR_H

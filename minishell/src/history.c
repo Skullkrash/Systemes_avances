@@ -1,3 +1,10 @@
+/**
+ * @file history.c
+ * @brief Implementation of command history handling for the minishell.
+ * @author BRENNER Quentin, NEAGELY Jeannot
+ * @date 2025-2026
+ */
+
 #include "../include/history.h"
 
 void handle_history(char** args) {
