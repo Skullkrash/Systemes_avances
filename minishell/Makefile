@@ -22,7 +22,7 @@ INCLUDE	:= include
 DOC		:= doc
 
 ifeq ($(OS),Windows_NT)
-MAIN	:= main.exe
+MAIN	:= minishell.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 DOCDIR := $(DOC)
@@ -30,7 +30,7 @@ FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
 else
-MAIN	:= main
+MAIN	:= minishell
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 DOCDIR 		:= $(shell find $(DOC) -type d)
@@ -81,3 +81,7 @@ run: all
 .PHONY: doc
 doc:
 	doxygen $(DOCDIR)/doxygen.conf
+
+.PHONY: clean_doc
+clean_doc:
+	find $(DOCDIR) -type d \( -name html -o -name latex \) -exec rm -rf {} +
