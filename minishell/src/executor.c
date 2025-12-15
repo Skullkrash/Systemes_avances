@@ -110,6 +110,7 @@ void execute_commands(Commands* commands, BackgroundProcess* bg_processes)
         if (i < commands->command_count - 1 && commands->operators[i] != NULL) {
             if (strcmp(commands->operators[i], "&&") == 0 && last_status != 0) break; // Stop execution on failure
             if (strcmp(commands->operators[i], "||") == 0 && last_status == 0) break; // Stop execution on success
+            // ; just continue so we do nothing here
         } 
     }
 }

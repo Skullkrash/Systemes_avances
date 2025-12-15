@@ -7,6 +7,7 @@
 
 #include "../include/parser.h"
 
+const char* OPERATORS[] = {"&&", "||", "&", "|", ";", NULL}; // SUCCESS AND, FAIL OR, BACKGROUND, PIPE, COMMAND_SEPARATOR
 const char* OPERATORS[] = {"&&", "||", "&", "|", NULL}; // SUCCESS AND, FAIL OR, BACKGROUND, PIPE  
 
 int detect_operator(const char* p, const char** op_found) {
