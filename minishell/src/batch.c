@@ -36,6 +36,7 @@ int handle_arguments(int argc, const char *argv[]) {
 
             execute_commands(&batch_command, &bg_processes);
 
+            // We decided to deactivate the history feature for batch mode, not seeing much use for it
             // add_to_history(batch_command);
 
             free_commands(&batch_command);

@@ -25,19 +25,6 @@ void handle_pwd(char** args);
 void handle_echo(char** args);
 
 /**
- * @brief Built-in history command handler.
- * Handles displaying the command history to the user.
- * @param args voided
- */
-void handle_history(char** args);
-
-/**
- * @brief Handles writing inputted commands in history file (~/minishell_logs/command_history).
- * @param command_line The entire command line that needs to be added in the history file.
- */
-void add_to_history(char* command_line);
-
-/**
  * @brief Built-in exit command handler.
  * Exits the shell after freeing necessary resources.
  * @param commands Pointer to the Commands struct containing commands and operators.

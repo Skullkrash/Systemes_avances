@@ -4,6 +4,7 @@
 #include "typedef.h"
 #include "internal_commands.h"
 #include "aliases.h"
+#include "history.h"
 
 /**
  * @brief Executes a single command, checking for internal commands first.
