@@ -34,6 +34,20 @@ int create_child_process(Command* command, bool is_background);
  */
 void check_bg_processes(BackgroundProcess* bg_processes); 
 
+/**
+ * @brief Executes a series of piped commands.
+ * @param commands Pointer to the Commands struct containing commands and operators.
+ * @param start_index Index of the first command in the pipe sequence.
+ * @param end_index Index of the last command in the pipe sequence.
+ * @return Exit status of the last command in the pipe sequence.
+ */
 int execute_pipes(Commands* commands, int start_index, int end_index);
+
+/**
+ * @brief Sets up input and output redirections for a command.
+ * @param command Pointer to the Command struct to set up redirections for.
+ * @return 0 on success, -1 on failure.
+ */
+int setup_redirections(Command* command);
 
 #endif

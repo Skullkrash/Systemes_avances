@@ -8,7 +8,7 @@
 #include "../include/executor.h"
 #include "../include/batch.h"
 
-// Structure de gestion de la ligne d'entrée
+// Global variables
 Commands parsed_commands;
 BackgroundProcess bg_processes = {.count = 0};
 
@@ -50,21 +50,18 @@ int main(int argc, const char *argv[])
         {
             line[strcspn(line, "\n")] = 0;
             if (strlen(line) == 0){
-                continue; // si la ligne est vide
+                continue; // if empty line, re-prompt
             }
 
             split_line(line, &parsed_commands);
 
-            // Check for aliases in parsed_commands and replace them
             for (int i = 0; i < parsed_commands.command_count; i++) {
                 Command *cmd = &parsed_commands.commands[i];
 
-                // If args is empty or has more than one element, continue
                 if (cmd->args == NULL || cmd->args[0] == NULL  || cmd->arg_count > 1) {
                     continue;
                 }
 
-                // If command is an alias, free the old command and args, and replace them with the alias definition
                 if (is_alias(cmd->args[0]) == 0) {
                     const char *alias_command = get_alias_command(cmd->args[0]);
                     if (alias_command == NULL) {

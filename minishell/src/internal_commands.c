@@ -17,7 +17,7 @@ void handle_pwd(char** args) {
 }
 
 void handle_cd(char** args) {
-    if (args[1] == NULL || strcmp(args[1], "~") == 0) {
+    if (args[1] == NULL || strcmp(args[1], "~") == 0) { // case "cd" or "cd ~"
         char* home = getenv("HOME");
         if (home != NULL) {
             args[1] = home;

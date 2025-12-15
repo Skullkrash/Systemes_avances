@@ -14,6 +14,7 @@ int create_child_process(Command* command, bool is_background)
 
     if (pid == 0)
     {
+        // backgroud process & 
         if (is_background) {
             int in_fd = open("/dev/null", O_RDONLY);
             if (in_fd != -1) {
@@ -23,7 +24,7 @@ int create_child_process(Command* command, bool is_background)
         }
         exit(execvp(command->args[0], command->args));
     } else if (pid > 0) {
-        if (is_background) {
+        if (is_background) { // don't wait for bg processes
             return pid;
         } else {
             waitpid(pid, &status, 0);
@@ -51,7 +52,7 @@ void execute_commands(Commands* commands, BackgroundProcess* bg_processes)
 
         bool is_background = false;
 
-        if (i < commands->command_count - 1 && commands->operators[i] && strcmp(commands->operators[i], "&") == 0) {
+        if (i < commands->command_count && commands->operators[i] && strcmp(commands->operators[i], "&") == 0) {
             is_background = true;
         }
 
@@ -112,7 +113,7 @@ int execute_command(Command* command, bool is_background)
     if (command->args == NULL || command->args[0] == NULL) {
         return EXIT_FAILURE; 
     }
-    
+
     // Check for internal commands, if found point to the corresponding function in internal_cmds[]
     for (int i = 0; internal_cmds_list[i] != NULL; i++) {
         if (strcmp(command->args[0], internal_cmds_list[i]) == 0) {

@@ -21,11 +21,11 @@ int detect_operator(const char* p, const char** op_found) {
 char* trim_whitespace(const char* line) {
     if (line == NULL) return NULL;
 
-    while (*line == ' ' || *line == '\t') line++;
+    while (*line == ' ' || *line == '\t') line++; // Trim leading whitespace
     if (*line == '\0') return strdup("");
 
     const char* end = line + strlen(line) - 1;
-    while (end > line && (*end == ' ' || *end == '\t')) end--;
+    while (end > line && (*end == ' ' || *end == '\t')) end--; // Trim trailing whitespace
     
     size_t length = end - line + 1;
     char* trimmed = strndup(line, length);
@@ -46,7 +46,7 @@ void split_line(const char* line, Commands *commands)
         pos++;
     }
 
-    while (*pos && index < MAX_COMMANDS) {
+    while (*pos && index < MAX_COMMANDS) { // parse until max commands
         const char* op = NULL;
         int op_len = detect_operator(pos, &op);
         if (op_len > 0) {
