@@ -28,6 +28,10 @@ int create_child_process(Command* command, bool is_background)
                 close(in_fd);
             }
         }
+        // setup redirections if any
+        if (setup_redirections(command) != EXIT_SUCCESS) {
+            exit(EXIT_FAILURE);
+        }
         execvp(command->args[0], command->args);
 
         // case execvp fails
@@ -230,3 +234,85 @@ int execute_pipes(Commands* commands, int start_index, int end_index) {
     }
     return last_status;
 }    
+
+int setup_redirections(Command* command) {
+    // << 
+    if (command->heredoc_delimiter != NULL) { 
+        int status = handle_heredoc(command);
+        if (status != EXIT_SUCCESS) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    // <
+    if (command->input_redirect) {
+        int in_fd = open(command->input_redirect, O_RDONLY);
+        if (in_fd < 0) {
+            perror("Input redirection failed");
+            return EXIT_FAILURE;
+        }
+        dup2(in_fd, STDIN_FILENO);
+        close(in_fd);
+    }
+
+    // > && >>
+    if (command->output_redirect) {
+        int flags = O_WRONLY | O_CREAT;
+        if (command->append_output) {
+            flags |= O_APPEND;
+        } else {
+            flags |= O_TRUNC;
+        }
+        int fd = open(command->output_redirect, flags, 0644);
+        if (fd == -1) {
+            fprintf(stderr, "Error opening output file: %s\n", strerror(errno));
+            return EXIT_FAILURE;
+        }
+        if (dup2(fd, STDOUT_FILENO) == -1) {
+            perror("dup2 output");
+            close(fd);
+            return EXIT_FAILURE;
+        }
+        close(fd);
+    }
+    return EXIT_SUCCESS;
+}
+
+int handle_heredoc(Command* command) {
+    char temp_file[] = "/tmp/minishell_heredoc_XXXXXX";
+    int fd = mkstemp(temp_file);
+    if (fd == -1) {
+        perror("mkstemp failed");
+        return EXIT_FAILURE;
+    }
+
+    printf("heredoc> ");
+    fflush(stdout);
+
+    char* line = NULL;
+    size_t len = 0;
+
+    while (getline(&line, &len, stdin) != -1) {
+        line[strcspn(line, "\n")] = 0; 
+        if (strcmp(line, command->heredoc_delimiter) == 0) { // we stop when delimiter is found
+            break;
+        }
+        write(fd, line, strlen(line));
+        write(fd, "\n", 1);
+        printf("heredoc> ");
+        fflush(stdout);
+    }
+    free(line);
+    close(fd); // no need to write anymore so close it to open it in read only
+    fd = open(temp_file, O_RDONLY);
+    
+    if (fd == -1) {
+        perror("open heredoc temp file failed");
+        unlink(temp_file);
+        return EXIT_FAILURE;    
+    } 
+    dup2(fd, STDIN_FILENO);
+    close(fd);
+    unlink(temp_file);
+    return EXIT_SUCCESS;
+}

@@ -38,10 +38,14 @@
 
 /** Structure to hold a single command and its details */ 
 typedef struct Command {
-  char*   command;            // Original command string
-  size_t  length;             // Length of the command string
-  char**  args;               // Argument list
-  int     arg_count;          // May not have a final use, don't forget to delete if unused 
+  char*   command;                    // Original command string
+  size_t  length;                     // Length of the command string
+  char**  args;                       // Argument list
+  int     arg_count;                  // Number of arguments related to the command
+  char*   input_redirect;             // file for <
+  char*   output_redirect;            // file for > or >>
+  char*   heredoc_delimiter;          // delimiter for <<
+  bool    append_output;              // true for >>, false for >
 } Command;
 
 /** Structure to hold multiple commands and their operators */

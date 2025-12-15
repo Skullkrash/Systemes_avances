@@ -50,4 +50,11 @@ int execute_pipes(Commands* commands, int start_index, int end_index);
  */
 int setup_redirections(Command* command);
 
+/**
+ * @brief Handles here-document (heredoc) input for a command.
+ * @param command Pointer to the Command struct containing the heredoc delimiter.
+ * @return 0 on success, -1 on failure.
+ */
+int handle_heredoc(Command* command);
+
 #endif // EXECUTOR_H

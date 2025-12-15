@@ -71,13 +71,18 @@ void free_commands(Commands* commands)
         free_if_needed(commands->commands[i].command);
         if (commands->commands[i].args != NULL) {
             for (int j = 0; j < commands->commands[i].arg_count; j++) {
-                free_if_needed(commands->commands[i].args[j]);
+                free(commands->commands[i].args[j]);
             }
-            free_if_needed(commands->commands[i].args);
+            free(commands->commands[i].args);
         }
         
         if (i < commands->command_count - 1) {
             free_if_needed(commands->operators[i]);
         }
+        free_if_needed(commands->commands[i].input_redirect);
+        commands->commands[i].input_redirect = NULL;
+        free_if_needed(commands->commands[i].output_redirect);
+        commands->commands[i].output_redirect = NULL;
+        commands->commands[i].append_output = false;
     }
 }

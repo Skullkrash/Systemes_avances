@@ -8,7 +8,7 @@
 #include "../include/parser.h"
 
 const char* OPERATORS[] = {"&&", "||", "&", "|", ";", NULL}; // SUCCESS AND, FAIL OR, BACKGROUND, PIPE, COMMAND_SEPARATOR
-const char* OPERATORS[] = {"&&", "||", "&", "|", NULL}; // SUCCESS AND, FAIL OR, BACKGROUND, PIPE  
+const char* REDIRECTORS[] = {"<<", ">>", "<", ">", NULL}; // HEREDOC, APPEND, INPUT, OUTPUT
 
 int detect_operator(const char* p, const char** op_found) {
     for (int i = 0; OPERATORS[i] != NULL; i++) {
@@ -37,12 +37,12 @@ char* trim_whitespace(const char* line) {
 
 void split_line(const char* line, Commands *commands)
 {
+    free_commands(commands); 
+    
     int index = 0;
     commands->command_count = 0;
     const char* start = line;
     const char* pos = line;
-
-    free_commands(commands);
 
     while(*start == ' ' || *start == '\t') {
         start++;
@@ -87,7 +87,6 @@ void split_line(const char* line, Commands *commands)
 }
 
 void parse_command(Command* command) {
-    // Simple parser that splits command string into arguments based on spaces and handles quotes
     char* cmd_copy = strdup(command->command);
     char** args = (char**)malloc(sizeof(char*) * 64);
     
@@ -162,5 +161,45 @@ void parse_command(Command* command) {
     command->args = args;
     command->arg_count = i;
 
+    for (int i = 0; i < command->arg_count; i++) {
+        if(args[i] && (strcmp(args[i], REDIRECTORS[0]) == 0 || 
+           strcmp(args[i], REDIRECTORS[1]) == 0 || 
+           strcmp(args[i], REDIRECTORS[2]) == 0 || 
+           strcmp(args[i], REDIRECTORS[3]) == 0)) {
+            
+            if (args[i + 1]) {
+                if (strcmp(args[i], REDIRECTORS[0]) == 0) { // << heredoc
+                    command->heredoc_delimiter = strdup(args[i + 1]);
+                } else if (strcmp(args[i], REDIRECTORS[1]) == 0) { // >>
+                    command->output_redirect = strdup(args[i + 1]);
+                    command->append_output = true;
+                } else if (strcmp(args[i], REDIRECTORS[2]) == 0) { // <
+                    command->input_redirect = strdup(args[i + 1]);
+                } else if (strcmp(args[i], REDIRECTORS[3]) == 0) { // >
+                    command->output_redirect = strdup(args[i + 1]);
+                    command->append_output = false;
+                }
+
+                free(args[i]);
+                free(args[i + 1]);
+                args[i] = NULL;
+                args[i + 1] = NULL;
+                i++; // Skip next as it's already processed
+            }
+        }
+    }
+
+    // shift args to remove NULL entries
+    for (int j = 0; j < command->arg_count; j++) {
+        if (args[j] == NULL) {
+            for (int k = j; k < command->arg_count - 1; k++) {
+                args[k] = args[k + 1];
+            }
+            command->arg_count--;
+            j--; 
+        }       
+    }
+    
+    args[command->arg_count] = NULL;
     free(cmd_copy);
 }
