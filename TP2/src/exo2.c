@@ -86,54 +86,60 @@ int main(int argc, char** argv)
     }
   } 
 
-  if (argv[1] != NULL)
-  {
-    printf("%s\n", argv[1]);
-  } else {
-    printf("No argument\n");
-    exit(EXIT_FAILURE);
-  }
-  
-  int p2, file_descriptor;
+  // ---------- ACTUAL MAIN CODE (read the pdf - exo 2) ----------
+  // Nous ne sommes pas sur d'avoir complètement compris l'énoncé de cet exercice
+  // Il se peut donc que notre code ne corresponde pas exactement à ce qui est attendu
+  // Cependant, nous avons fait de notre mieux pour implémenter ce qui était demandé
 
-  if ((p2 = fork()) == 0) { // Child process
-    printf("-----CHILD-----\n");
-    printf("Child PID : %d\n", getpid());
-    close(1);
-    char* buf = "/tmp/proc-exerciseXXXXXX";
-    file_descriptor = mkstemp(buf);
-    if (file_descriptor == -1)
-    {
+  if (argv[1] != NULL && argv[2] == NULL) 
+  {
+    write(STDOUT, argv[1], strlen(argv[1]));
+  } 
+  else if (argv[1] == NULL) {
+    perror("No argument provided");
+    exit(EXIT_FAILURE);
+  } 
+  else if (argv[2] != NULL)
+  {
+    perror("Too many arguments provided");
+    exit(EXIT_FAILURE); 
+  }
+
+  if (fork() == 0) {
+    int pid = getpid();
+    printf("Child PID : %d\n", pid);
+
+    // close(STDOUT); // variante 1 
+    close(STDERR);
+
+    char buf[] = "/tmp/proc-exerciseXXXXXX";
+    int fd = mkstemp(buf);
+
+    if (fd == -1) {
       perror("mkstemp");
       exit(EXIT_FAILURE);
-    }
-    
+    } 
 
-    int ret = dup2(file_descriptor, 1);
-    if (ret == -1)
-    {
+    // int new_fd = dup2(fd, STDOUT); // variante 1 
+    int new_fd = dup2(fd, STDERR);
+    if (new_fd == -1) {
       perror("dup2");
       exit(EXIT_FAILURE);
     }
+
+    // dprintf(STDERR,"dup2 returned : %d\n", new_fd); // variante 1 
+    dprintf(STDOUT,"dup2 returned : %d\n", new_fd);
+    execvp(argv[1], &argv[1]);
     
-    printf("ret : %d\n", ret);
-
-    // printf("file_descriptor : %d\n", dup2(file_descriptor, 1));
-    printf("Child success !\n");
-    exit(EXIT_SUCCESS);
-  }
-  else { // Parent process
-    printf("-----PARENT-----\n");
-    printf("Parent PID : %d\n", getpid());
-    printf("Waiting for child process to finish...\n");
-    waitpid(p2, NULL, 0); // Wait for child process to finish
-    printf("Parent finished waiting for child !\n");
-    printf("Parent success !\n");
-    exit(EXIT_SUCCESS);
+    close(fd);
+    perror("execvp failed");
+    exit(EXIT_FAILURE);
+  } else { // parent process
+      printf("Parent PID : %d\n", getpid());
+      waitpid(-1, NULL, 0);
+      printf("That's all folks !\n");
   }
 
-
-  close(file_descriptor);
 
   return EXIT_SUCCESS;
 }
