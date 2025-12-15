@@ -28,13 +28,7 @@ Alias aliases_list[MAX_ALIASES] = { {NULL, NULL} };
 /** The current number of aliases */
 int alias_count = 0;
 
-void handle_alias(char **args) {
-    // If args is empty has more than two elements, needs error handling
-    if (args[3] != NULL) {
-        printf("alias: too many arguments\n");
-        return;
-    }
-    
+void handle_alias(char **args) {    
     // If no additional arguments, list all aliases
     if (args[1] == NULL) {
         list_aliases();
@@ -53,14 +47,24 @@ void handle_alias(char **args) {
         return;
     }
 
-    // Last possible case : two arguments, meaning we need to add a new temporary alias
-    Alias new_alias;
-    new_alias.name = strtok(strdup(args[1]), "=");
-
-    new_alias.command = malloc(strlen(args[2]) + 2);
-    strcat(new_alias.command, args[2]);
     
-    add_alias(new_alias);
+    if (args[3] == NULL) {
+        // Two arguments, meaning we need to add a new temporary alias
+        Alias new_alias;
+        new_alias.name = strtok(strdup(args[1]), "=");
+
+        new_alias.command = malloc(strlen(args[2]) + 2);
+        strcpy(new_alias.command, args[2]);
+        
+        add_alias(new_alias);
+
+        return;
+    }
+
+    // Last possible case : If args has more than two elements, needs error handling
+    if (args[3] != NULL) {
+        printf("alias: too many arguments\n");
+    }
 
     return;
 }
