@@ -29,12 +29,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define MAX_COMMANDS 3 
-#define MAX_BG_PROCESSES 10 
+#define MAX_COMMANDS      3 
+#define MAX_BG_PROCESSES  10 
 
-#define GREEN "\033[1;32m" 
-#define BLUE "\033[1;34m" 
-#define COLOR_RESET "\033[0m"
+#define GREEN         "\033[1;32m" 
+#define BLUE          "\033[1;34m" 
+#define COLOR_RESET   "\033[0m"
 
 /** Structure to hold a single command and its details */ 
 typedef struct Command {
@@ -50,26 +50,27 @@ typedef struct Command {
 
 /** Structure to hold multiple commands and their operators */
 typedef struct Commands {
-  Command commands[MAX_COMMANDS];         // Array of parsed commands
-  char*   operators[MAX_COMMANDS];        // Operators between commands
-  int     command_count;                  // Number of commands parsed
+  Command commands[MAX_COMMANDS];     // Array of parsed commands
+  char*   operators[MAX_COMMANDS];    // Operators between commands
+  int     command_count;              // Number of commands parsed
 } Commands;
 
 /** Structure to hold background job details */
 typedef struct Jobs {
-  pid_t   pid;                // Process ID
-  char*   command;            // Command string
+  pid_t   pid;                        // Process ID
+  char*   command;                    // Command string
 } Jobs;
 
 /** Structure to manage background processes */
 typedef struct BackgroundProcess {
-  int     count;                              // Number of background processes
-  Jobs    processes[MAX_BG_PROCESSES];        // Array of background processes
+  int     count;                      // Number of background processes
+  Jobs    processes[MAX_BG_PROCESSES];// Array of background processes
 } BackgroundProcess;
 
+/** Structure for alias management */
 typedef struct Alias {
-  char*   name;             // Alias name
-  char*   command;          // Command string
+  char*   name;                       // Alias name
+  char*   command;                    // Command string
 } Alias;
 
 #endif // TYPEDEF_H
