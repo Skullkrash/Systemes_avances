@@ -81,7 +81,3 @@ run: all
 .PHONY: doc
 doc:
 	doxygen $(DOCDIR)/doxygen.conf
-
-.PHONY: clean_doc
-clean_doc:
-	find $(DOCDIR) -type d \( -name html -o -name latex \) -exec rm -rf {} +

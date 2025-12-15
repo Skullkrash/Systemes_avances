@@ -1,0 +1,66 @@
+.TH man 1
+.SH NAME
+minishell \- a lightweight Unix shell implementation
+
+.SH SYNOPSIS
+.B minishell
+.RI [ options ]
+.br
+.B minishell
+.RI [ -c\ | --command\ ] " <command>"
+.br
+.B minishell
+.RI [ --help ]
+
+.SH DESCRIPTION
+.B minishell
+is a lightweight version of a Unix shell, allowing the execution of simple or compound commands, management of redirections, pipes, logical operators, history, temporary aliases, and a batch mode.
+
+.SH OPTIONS
+.TP
+.BR -c ", " --command " <command>"
+Execute the specified command before exiting.
+.TP
+.B --help
+Display the help message and exit.
+
+.SH FEATURES
+.TP
+.B Unix commands execution
+Execute standard Unix commands with or without arguments.
+.TP
+.B Redirections and Pipes
+Supports input and output redirections (\fB>\fR, \fB<\fR, \fB>>\fR, \fB<<\fR) as well as pipes (\fB|\fR).
+.TP
+.B Logic operators
+Supports conditional execution of commands using AND (\fB&&\fR) and OR (\fB||\fR) operators.
+.TP
+.B Background command execution
+Allows background execution of commands using the \fB&\fR symbol.
+.TP
+.B Built-in commands
+Custom implementation of built-in commands: \fBcd\fR, \fBpwd\fR, \fBexit\fR, \fBecho\fR, \fBhistory\fR, \fBalias\fR, \fBunalias\fR.
+.TP
+.B Command history
+Every command entered is logged in \fB~/minishell_logs/command_history\fR. The \fBhistory\fR command displays this history.
+.TP
+.B Temporary aliases
+The minishell allows the creation, display, and deletion of temporary aliases valid for the current session.
+
+.SH EXEMPLES
+.TP
+.B minishell
+Launches the interactive minishell.
+.TP
+.B minishell -c "ls -alF > file.txt"
+Executes the command \fBls -alF and redirects the output to \fBfile.txt\fR, then exits.
+.TP
+.B minishell --help
+Shows the help message.
+
+.SH AUTHORS
+BRENNER Quentin and NAEGELY Jeannot
+
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1)
