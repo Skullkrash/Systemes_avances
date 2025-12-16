@@ -1,0 +1,20 @@
+# Get tomcat JRE25 image
+FROM tomcat:jre25 
+
+# Install wget to download jenkins.war
+RUN apt-get update && apt-get install -y \
+    wget 
+
+# Remove default ROOT webapp
+RUN rm -rf /usr/local/tomcat/webapps/ROOT
+
+# Download jenkins.war from official source to the webapps folder in the container
+RUN cd /usr/local/tomcat/webapps/ && wget -O ROOT.war https://get.jenkins.io/war-stable/2.528.2/jenkins.war 
+
+# Alternatively copy local file jenkins.war to the webapps folder in the container
+#COPY jenkins.war /usr/local/tomcat/webapps/
+
+# Uninstall wget to reduce image size
+RUN apt uninstall -y wget
+
+EXPOSE 8080

@@ -4,19 +4,18 @@
 #include<errno.h>
 #include<fcntl.h>
 #include<string.h>
+#include<unistd.h>
+#include<unistd.h>
+#include<sys/wait.h>
 #include<getopt.h>
-#include <unistd.h>
 
 #define STDOUT 1
 #define STDERR 2
 
 #define MAX_PATH_LENGTH 4096
 
-#define USAGE_SYNTAX "[OPTIONS] -i INPUT -o OUTPUT"
+#define USAGE_SYNTAX "[OPTIONS]"
 #define USAGE_PARAMS "OPTIONS:\n\
-  -i, --input  INPUT_FILE  : input file\n\
-  -o, --output OUTPUT_FILE : output file\n\
-***\n\
   -h, --help    : display this help\n\
 "
 
@@ -56,8 +55,6 @@ char* dup_optarg_str()
 static struct option binary_opts[] = 
 {
   { "help",    no_argument,       0, 'h' },
-  { "input",   required_argument, 0, 'i' },
-  { "output",  required_argument, 0, 'o' },
   { 0,         0,                 0,  0  } 
 };
 
@@ -67,11 +64,6 @@ const char* binary_optstr = "hvi:o:";
 
 int main(int argc, char** argv)
 {
-  // Binary variables
-  short int is_verbose_mode = 0;
-  char* bin_input_param = NULL;
-  char* bin_output_param = NULL;
-
   // Parsing options
   int opt = -1;
   int opt_idx = -1;
@@ -80,25 +72,8 @@ int main(int argc, char** argv)
   {
     switch (opt)
     {
-      case 'i':
-        //input param
-        if (optarg)
-        {
-          bin_input_param = dup_optarg_str();         
-        }
-        break;
-      case 'o':
-        //output param
-        if (optarg)
-        {
-          bin_output_param = dup_optarg_str();
-        }
-        break;
       case 'h':
         print_usage(argv[0]);
-
-        free_if_needed(bin_input_param);
-        free_if_needed(bin_output_param);
  
         exit(EXIT_SUCCESS);
       default :
@@ -107,46 +82,80 @@ int main(int argc, char** argv)
   } 
 
   // Checking binary requirements (parameters)
-  if (bin_input_param == NULL || bin_output_param == NULL)
+  if (argc > 1)
   {
     dprintf(STDERR, "Bad usage! See HELP [--help|-h]\n");
-    free_if_needed(bin_input_param);
-    free_if_needed(bin_output_param);
+
     exit(EXIT_FAILURE);
   }
 
-  // ---------- ACTUAL MAIN CODE (copies input file content into output file)----------
+  // ---------- ACTUAL MAIN CODE (does the equivalent of command : ps eaux | grep "^root " > /dev/null && echo "root est connecté") ----------
+  
+  int fd[2];
+  int status, grep_status, ps_status;
 
-  int f1, f2;
+  status = pipe(fd);
 
-  f1 = open(bin_input_param, O_RDONLY);
-  f2 = open(bin_output_param, O_WRONLY | O_CREAT);
-
-  if (f1 == -1 || f2 == -1) {
-    perror("Error");
-    exit(1);
+  if (status == -1) {
+    perror("pipe");
+    exit(EXIT_FAILURE);
   }
 
-  int nbread = 0; 
-  int nbwrite = 0;
-  char buf[4096];
+  // First son, executes 'ps eaux'
+  if(fork() == 0) {
 
-  // Copying content from f1 to f2
-  while ((nbread = read(f1, &buf, 4096)) > 0) {
-    nbwrite = write(f2, &buf, nbread);
-    if (nbwrite != nbread) {
-      break;
+    // Redirects stdout to pipe write end
+    dup2(fd[1], STDOUT_FILENO);
+    close(fd[0]);
+    close(fd[1]);
+    
+    ps_status = execlp("ps", "ps", "eaux", NULL);
+
+    if (ps_status == -1) {
+      perror("execlp ps");
+      exit(EXIT_FAILURE);
     }
+
+    exit(ps_status);
+  } 
+  
+  // Second son, executes 'grep "^root"'
+  if (fork() == 0) {
+    // Redirects stdout to /dev/null
+    int null_fd = open("/dev/null", O_WRONLY);
+    if(null_fd == -1) {
+      perror("open /dev/null");
+      exit(EXIT_FAILURE);
+    }
+    dup2(null_fd, STDOUT_FILENO);
+    close(null_fd);
+
+    // Executes grep with stdin redirected from pipe
+    dup2(fd[0], STDIN_FILENO);
+    close(fd[1]);
+    close(fd[0]);
+
+    grep_status = execlp("grep", "grep", "^root", NULL);
+
+    close(fd[0]);
+    exit(grep_status);
   }
 
-  // Closing descriptors
-  if (close(f1) == -1 || close(f2) == -1) {
-    perror("Error");
-    exit(1);
-  }
+  close(fd[0]);
+  close(fd[1]);
+  
+  // Waiting for both sons to finish
+  wait(&ps_status);
+  wait(&grep_status);
 
-  free_if_needed(bin_input_param);
-  free_if_needed(bin_output_param);
+  // Check return code of grep and display appropriate message
+  if(WEXITSTATUS(grep_status) != 0) {
+    write(STDOUT, "root n'est pas connecté\n", 25);
+    exit(EXIT_FAILURE);
+  } else {
+    // grep a trouvé root
+    write(STDOUT, "root est connecté\n", 19);
+  }
 
   return EXIT_SUCCESS;
 }

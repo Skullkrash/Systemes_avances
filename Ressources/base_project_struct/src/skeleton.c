@@ -7,14 +7,14 @@
  *
  * Basic parsing options skeleton exemple c file.
  */
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<errno.h>
-#include<fcntl.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 
-#include<getopt.h>
+#include <getopt.h>
 
 
 #define STDOUT 1

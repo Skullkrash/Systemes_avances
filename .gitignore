@@ -1,0 +1,10 @@
+*.o
+*.d
+*/bin/*
+.vscode/
+TP4/jenkins.war
+.DS_Store
+output/
+build/
+minishell/doc/html/*
+minishell/doc/latex/*
