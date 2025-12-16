@@ -10,7 +10,6 @@ Le projet se compile avec le fichier Makefile situé dans le même dossier, à l
 
 ## Documentation
 
-- [Documentation générée par doxygen **A REMPLIR QUAND ON AURA LES DONNEES**]()
 - [PDF généré par doxygen](./doc/minishell_doxygen.pdf)
 - [Sujet du projet](./doc/00-project_minishell.pdf)
 - [Page de manuel linux](./doc/minishell.1)
